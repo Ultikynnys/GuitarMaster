@@ -8,13 +8,17 @@
   "beatsPerBar": 4,
   "steps": [
     { "type": "chord", "chord": "Em", "beats": 1 },
-    { "type": "chord", "chord": "Em", "beats": 1 },
-    { "type": "chord", "chord": "Em", "beats": 1 },
     { "type": "chord", "chord": "Em", "beats": 0.5 },
     { "type": "chord", "chord": "Em", "beats": 0.5 },
+    { "type": "chord", "chord": "Em", "beats": 0.5, "muted": true },
+    { "type": "chord", "chord": "Em", "beats": 0.5 },
+    { "type": "chord", "chord": "Em", "beats": 0.5 },
+    { "type": "chord", "chord": "Em", "beats": 0.5 },
     { "type": "chord", "chord": "G", "beats": 1 },
-    { "type": "chord", "chord": "G", "beats": 1 },
-    { "type": "chord", "chord": "G", "beats": 1 },
+    { "type": "chord", "chord": "G", "beats": 0.5 },
+    { "type": "chord", "chord": "G", "beats": 0.5 },
+    { "type": "chord", "chord": "G", "beats": 0.5, "muted": true },
+    { "type": "chord", "chord": "G", "beats": 0.5 },
     { "type": "chord", "chord": "G", "beats": 0.5 },
     { "type": "chord", "chord": "G", "beats": 0.5 }
   ]
