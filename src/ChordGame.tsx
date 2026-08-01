@@ -104,12 +104,11 @@ function ChordTab({ chord, nextChord }: { chord: ChordShape; nextChord: ChordSha
             const nextFinger = nextDiagramFingers[string];
             const currentPosition = diagramFrets[string] === String(fret);
             const nextPosition = nextDiagramFrets[string] === String(fret);
-            const currentStringIsUsed = diagramFrets[string] !== "" && diagramFrets[string] !== "0" && diagramFrets[string] !== "x";
             return (
               <i key={index}>
                 {currentPosition
                   ? <b className={`finger-${finger}`}>{finger}</b>
-                  : nextPosition && !currentStringIsUsed && <b className={`next-finger finger-${nextFinger}`}>{nextFinger}</b>}
+                  : nextPosition && !currentPosition && <b className={`next-finger finger-${nextFinger}`}>{nextFinger}</b>}
               </i>
             );
           })}
