@@ -23,7 +23,7 @@ describe("song catalog", () => {
       ["rhythm-player", ["about-a-girl", "seven-nation-army", "sunshine-of-your-love", "iron-man", "tetris-theme", "lost-woods"]],
       ["band-ready", ["bad-moon-rising", "sweet-home-alabama", "californication", "day-tripper", "mario-ground-full", "megalovania"]],
       ["headliner", ["back-in-black", "hotel-california", "enter-sandman", "house-rising-sun", "crazy-train", "song-of-storms"]],
-      ["rock-star", ["thunderstruck", "dont-fear-reaper", "sweet-child-o-mine", "at-dooms-gate", "gerudo-valley", "final-fantasy-prelude"]],
+      ["rock-star", ["thunderstruck", "dont-fear-reaper", "sweet-child-o-mine", "at-dooms-gate", "gerudo-valley", "halo-theme"]],
     ]);
     for (const level of catalog) {
       for (const category of level.categories) {
@@ -44,7 +44,7 @@ describe("song catalog", () => {
       "about-a-girl": 2, "seven-nation-army": 2, "sunshine-of-your-love": 2, "iron-man": 4, "tetris-theme": 4, "lost-woods": 4,
       "bad-moon-rising": 4, "sweet-home-alabama": 2, californication: 4, "day-tripper": 2, "mario-ground-full": 3, megalovania: 8,
       "back-in-black": 4, "hotel-california": 8, "enter-sandman": 2, "house-rising-sun": 4, "crazy-train": 2, "song-of-storms": 8,
-      thunderstruck: 2, "dont-fear-reaper": 2, "sweet-child-o-mine": 4, "at-dooms-gate": 1, "gerudo-valley": 4, "final-fantasy-prelude": 1,
+      thunderstruck: 2, "dont-fear-reaper": 2, "sweet-child-o-mine": 4, "at-dooms-gate": 1, "gerudo-valley": 4, "halo-theme": 3,
     };
     expect(Object.fromEntries(songs.map((song) => [song.id, Math.round(songBeats(song.id) / song.beatsPerBar)]))).toEqual(expectedBars);
 
