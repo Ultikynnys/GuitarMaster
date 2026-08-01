@@ -34,9 +34,8 @@ const FRET_COUNT = 24;
 const FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
 
 function stepLabel(step: ProgressionStep): string {
-  if (step.type === "mute") return "Mute";
-  if (step.type === "chord") return step.chord;
-  return `${step.note} ${step.octave}`;
+  if (step.type === "chord") return step.chord + (step.muted ? " (muted)" : "");
+  return `${step.note} ${step.octave}` + (step.muted ? " (muted)" : "");
 }
 
 function stepBeats(step: ProgressionStep): number {
@@ -59,7 +58,6 @@ function shapeForStep(step: ProgressionStep): ChordShape {
   if (step.type === "chord") return CHORDS[step.chord];
   const frets: ChordShape["frets"] = ["", "", "", "", "", ""];
   const fingerNumbers: ChordShape["fingerNumbers"] = ["", "", "", "", "", ""];
-  if (step.type === "mute") return { name: "Mute", frets, fingerNumbers };
   frets[step.string] = String(step.fret);
   fingerNumbers[step.string] = step.finger;
   return {
@@ -178,7 +176,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const currentStep = progression.steps[currentIndex] ?? progression.steps[0];
   const currentLabel = stepLabel(currentStep);
   const currentChordName = currentStep.type === "chord" ? currentStep.chord : null;
-  const currentIsMute = currentStep.type === "mute";
+  const currentIsMute = false;
   const currentNote = currentStep.type === "note" ? currentStep : null;
   const currentIsChord = currentChordName !== null;
   const currentMatches = currentIsChord
@@ -191,7 +189,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const visualIndex = autoplaying && autoplayIndex >= 0 ? autoplayIndex : currentIndex;
   const visualStep = progression.steps[visualIndex] ?? progression.steps[0];
   const visualNextStep = progression.steps[(visualIndex + 1) % progression.steps.length];
-  const visualIsMute = visualStep.type === "mute";
+  const visualIsMute = false;
   const visualIsChord = visualStep.type === "chord";
   const visualLabel = stepLabel(visualStep);
   const signalTooLow = listening && inputLevel < minimumSignal;
@@ -346,13 +344,20 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     const context = feedbackAudioContext.current;
     if (!context) return;
     const sustainDuration = stepDurationSeconds(stepBeats(step), stepBpm);
-    if (step.type === "mute") return;
     if (step.type === "note") {
       const midi = (step.octave + 1) * 12 + NOTE_OFFSETS[step.note];
-      playPluck(440 * 2 ** ((midi - 69) / 12), startTime, 0.28, sustainDuration, step.string);
+      const freq = 440 * 2 ** ((midi - 69) / 12);
+      if (step.muted) {
+        // Palm-muted note: short percussive thwack, still pitched
+        playPluck(freq, startTime, 0.14, Math.min(0.08, sustainDuration), step.string);
+      } else {
+        playPluck(freq, startTime, 0.28, sustainDuration, step.string);
+      }
       return;
     }
     const chordName = step.chord;
+    const chordDur = step.muted ? Math.min(0.08, sustainDuration) : sustainDuration;
+    const chordVol = step.muted ? 0.06 : 0.11;
     CHORDS[chordName].frets.forEach((fret, string) => {
       const timing = chordPluckTiming(string, sustainDuration);
       if (fret === "x" || fret === "") {
@@ -360,7 +365,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
         return;
       }
       const frequency = OPEN_STRING_FREQUENCIES[string] * 2 ** (Number(fret) / 12);
-      playPluck(frequency, startTime + timing.delay, 0.11, timing.duration, string);
+      playPluck(frequency, startTime + timing.delay, chordVol, chordDur, string);
     });
   }
 

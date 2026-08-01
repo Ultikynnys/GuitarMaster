@@ -69,15 +69,16 @@ describe("song catalog", () => {
     expect(() => parseSong({ ...song, beatsPerBar: 3.5 }, "meter.json")).toThrow("Invalid song JSON meter.json: beatsPerBar must be a positive integer");
   });
 
-  test("accepts mute and rejects rest", () => {
+  test("rejects legacy mute step type", () => {
     const song = { id: "silence", name: "Silence", difficulty: "beginner", category: "rock", order: 1, recommendedBpm: 80, beatsPerBar: 4, steps: [{ type: "mute", beats: 4 }] };
-    expect(parseSong(song, "silence.json").steps[0]).toEqual({ type: "mute", beats: 4 });
+    expect(() => parseSong(song, "silence.json"))
+      .toThrow("Invalid song JSON silence.json: step 1 has unknown type mute");
     expect(() => parseSong({ ...song, steps: [{ type: "rest", beats: 4 }] }, "silence.json"))
       .toThrow("Invalid song JSON silence.json: step 1 has unknown type rest");
   });
 
   test("rejects step totals that do not complete a bar", () => {
-    const song = { id: "partial", name: "Partial", difficulty: "beginner", category: "rock", order: 1, recommendedBpm: 80, beatsPerBar: 4, steps: [{ type: "mute", beats: 3.5 }] };
+    const song = { id: "partial", name: "Partial", difficulty: "beginner", category: "rock", order: 1, recommendedBpm: 80, beatsPerBar: 4, steps: [{ type: "note", note: "E", octave: 2, string: 5, fret: 0, finger: "", beats: 3.5 }] };
     expect(() => parseSong(song, "partial.json"))
       .toThrow("Invalid song JSON partial.json: step beats total 3.5 does not resolve to complete 4-beat bars");
   });
@@ -97,10 +98,9 @@ describe("song catalog", () => {
     // Mute steps must be deliberate musical rests, not gap-fillers from
     // MIDI extraction. If a mute count changes here, verify the mutes are
     // intentional before updating the expected value.
-    const expectedMutes: Record<string, number> = {
-      "about-a-girl": 2,
-      "gerudo-valley": 4,
-    };
+    // All songs must have zero mute-type steps. Muting is now a per-step
+    // boolean property (muted: true), not a separate step type.
+    const expectedMutes: Record<string, number> = {};
     for (const song of songs) {
       const count = song.steps.filter((s) => s.type === "mute").length;
       const expected = expectedMutes[song.id] ?? 0;

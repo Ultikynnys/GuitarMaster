@@ -13,10 +13,9 @@ export const CATEGORIES = [
 
 export type DifficultyId = typeof DIFFICULTIES[number]["id"];
 export type CategoryId = typeof CATEGORIES[number]["id"];
-export type NoteStep = { type: "note"; note: string; octave: number; string: number; fret: number; finger: string; beats: number };
-export type ChordStep = { type: "chord"; chord: string; beats: number };
-export type MuteStep = { type: "mute"; beats: number };
-export type ProgressionStep = NoteStep | ChordStep | MuteStep;
+export type NoteStep = { type: "note"; note: string; octave: number; string: number; fret: number; finger: string; beats: number; muted?: boolean };
+export type ChordStep = { type: "chord"; chord: string; beats: number; muted?: boolean };
+export type ProgressionStep = NoteStep | ChordStep;
 export type Progression = {
   id: string;
   name: string;
@@ -60,7 +59,6 @@ export function parseSong(value: unknown, source = "<unknown>"): Progression {
     const location = `step ${index + 1}`;
     if (!isRecord(step)) fail(source, `${location} must be an object`);
     if (typeof step.beats !== "number" || !Number.isFinite(step.beats) || step.beats <= 0) fail(source, `${location} beats must be positive`);
-    if (step.type === "mute") return;
     if (step.type === "chord") {
       if (typeof step.chord !== "string" || !CHORD_NAMES.has(step.chord)) fail(source, `${location} has unknown chord ${String(step.chord)}`);
       return;

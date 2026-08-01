@@ -13,13 +13,14 @@
     "version:current": "bun scripts/version.ts"
   },
   "dependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "typescript": "latest",
+    "midi-file": "^1.2.4",
     "react": "latest",
     "react-dom": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest"
+    "typescript": "latest",
+    "vite": "latest"
   },
   "devDependencies": {
     "@types/bun": "^1.3.14"
