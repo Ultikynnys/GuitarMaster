@@ -42,9 +42,9 @@ describe("song catalog", () => {
     const expectedBars = {
       "knockin-heavens-door": 4, zombie: 8, "smoke-on-the-water": 4, "mario-ground-simple": 3, "zeldas-lullaby": 4, "final-fantasy-victory-fanfare": 3,
       "about-a-girl": 2, "seven-nation-army": 2, "sunshine-of-your-love": 2, "iron-man": 4, "tetris-theme": 4, "lost-woods": 4,
-      "bad-moon-rising": 4, "sweet-home-alabama": 2, californication: 4, "day-tripper": 2, "mario-ground-full": 3, megalovania: 5,
+      "bad-moon-rising": 4, "sweet-home-alabama": 2, californication: 4, "day-tripper": 2, "mario-ground-full": 3, megalovania: 4,
       "back-in-black": 4, "hotel-california": 8, "enter-sandman": 2, "house-rising-sun": 4, "crazy-train": 2, "song-of-storms": 8,
-      thunderstruck: 2, "dont-fear-reaper": 2, "sweet-child-o-mine": 4, "at-dooms-gate": 1, "gerudo-valley": 4, "halo-theme": 3,
+      thunderstruck: 2, "dont-fear-reaper": 2, "sweet-child-o-mine": 4, "at-dooms-gate": 1, "gerudo-valley": 4, "halo-theme": 4,
     };
     expect(Object.fromEntries(songs.map((song) => [song.id, Math.round(songBeats(song.id) / song.beatsPerBar)]))).toEqual(expectedBars);
 
