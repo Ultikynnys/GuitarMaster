@@ -104,7 +104,7 @@ function ChordTab({ chord, nextChord }: { chord: ChordShape; nextChord: ChordSha
             const nextFinger = nextDiagramFingers[string];
             const currentPosition = diagramFrets[string] === String(fret);
             const nextPosition = nextDiagramFrets[string] === String(fret);
-            const currentStringIsUsed = diagramFrets[string] !== "" && diagramFrets[string] !== "x";
+            const currentStringIsUsed = diagramFrets[string] !== "" && diagramFrets[string] !== "0" && diagramFrets[string] !== "x";
             return (
               <i key={index}>
                 {currentPosition
