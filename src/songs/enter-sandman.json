@@ -7,17 +7,17 @@
   "recommendedBpm": 123,
   "beatsPerBar": 4,
   "steps": [
-    { "type": "note", "note": "E", "octave": 2, "string": 5, "fret": 0, "finger": "", "beats": 1 },
+    { "type": "note", "note": "E", "octave": 2, "string": 5, "fret": 0, "finger": "", "beats": 1.5 },
     { "type": "note", "note": "E", "octave": 3, "string": 4, "fret": 7, "finger": "3", "beats": 0.5 },
     { "type": "note", "note": "G", "octave": 3, "string": 3, "fret": 5, "finger": "1", "beats": 0.5 },
     { "type": "note", "note": "E", "octave": 3, "string": 4, "fret": 7, "finger": "3", "beats": 0.5 },
     { "type": "note", "note": "A#", "octave": 2, "string": 5, "fret": 6, "finger": "3", "beats": 0.5 },
-    { "type": "note", "note": "A", "octave": 2, "string": 5, "fret": 5, "finger": "2", "beats": 1 },
-    { "type": "note", "note": "E", "octave": 2, "string": 5, "fret": 0, "finger": "", "beats": 1 },
+    { "type": "note", "note": "A", "octave": 2, "string": 5, "fret": 5, "finger": "2", "beats": 0.5 },
+    { "type": "note", "note": "E", "octave": 2, "string": 5, "fret": 0, "finger": "", "beats": 1.5 },
     { "type": "note", "note": "E", "octave": 3, "string": 4, "fret": 7, "finger": "3", "beats": 0.5 },
     { "type": "note", "note": "G", "octave": 3, "string": 3, "fret": 5, "finger": "1", "beats": 0.5 },
     { "type": "note", "note": "E", "octave": 3, "string": 4, "fret": 7, "finger": "3", "beats": 0.5 },
     { "type": "note", "note": "A#", "octave": 2, "string": 5, "fret": 6, "finger": "3", "beats": 0.5 },
-    { "type": "note", "note": "A", "octave": 2, "string": 5, "fret": 5, "finger": "2", "beats": 1 }
+    { "type": "note", "note": "A", "octave": 2, "string": 5, "fret": 5, "finger": "2", "beats": 0.5 }
   ]
 }
