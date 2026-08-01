@@ -295,11 +295,11 @@
     },
     {
       "type": "note",
-      "note": "F",
+      "note": "E",
       "octave": 4,
-      "string": 1,
-      "fret": 6,
-      "finger": "3",
+      "string": 0,
+      "fret": 0,
+      "finger": "",
       "beats": 3
     }
   ]
