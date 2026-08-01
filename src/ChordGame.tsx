@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { ChordResult, PitchResult } from "./audioDetection";
 import { chordPluckTiming, stepDurationSeconds } from "./playbackTiming";
+import { loadSamples, playSample, type SampleMap } from "./sampleEngine";
 import { buildCatalog, type ProgressionStep } from "./songCatalog";
 
 type ChordShape = {
@@ -161,6 +162,8 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const autoplayTimer = useRef<number | null>(null);
   const autoplayGeneration = useRef(0);
   const autoplaySources = useRef(new Set<AudioBufferSourceNode>());
+  const activeStringSource = useRef(new Map<number, AudioBufferSourceNode>());
+  const samplesRef = useRef<SampleMap | null>(null);
   const metronomeTimer = useRef<number | null>(null);
   const metronomeBeat = useRef(0);
   const bpmRef = useRef(bpm);
@@ -220,6 +223,9 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
       feedbackAudioContext.current = new AudioContext({ latencyHint: "interactive" });
     }
     if (feedbackAudioContext.current.state === "suspended") await feedbackAudioContext.current.resume();
+    if (!samplesRef.current) {
+      samplesRef.current = await loadSamples(feedbackAudioContext.current);
+    }
   }
 
   function playClick(kind: "tick" | "tock", volume: number, delay = 0) {
@@ -267,55 +273,65 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     playBeat();
   }
 
-  function playPluck(frequency: number, startTime: number, volume: number, duration: number) {
+  function playPluck(frequency: number, startTime: number, volume: number, duration: number, stringIndex?: number) {
     const context = feedbackAudioContext.current;
+    const samples = samplesRef.current;
     if (!context) return;
-    const sampleCount = Math.ceil(context.sampleRate * duration);
-    const period = Math.max(2, Math.round(context.sampleRate / frequency));
-    const buffer = context.createBuffer(1, sampleCount, context.sampleRate);
-    const samples = buffer.getChannelData(0);
-    let coloredNoise = 0;
-    for (let index = 0; index < period && index < sampleCount; index++) {
-      coloredNoise = coloredNoise * 0.68 + (Math.random() * 2 - 1) * 0.32;
-      samples[index] = coloredNoise;
+    if (!samples) {
+      console.warn("playPluck: samples not loaded yet, dropping note at", frequency.toFixed(1), "Hz");
+      return;
     }
-    for (let index = period; index < sampleCount; index++) {
-      samples[index] = (samples[index - period] + samples[index - period + 1]) * 0.4985;
+    // Stop the previous note on this string — on a real guitar, plucking the
+    // same string again replaces the old vibration; without this, overlapping
+    // samples on the same frequency phase-cancel each other into silence.
+    let retrigger = false;
+    if (stringIndex !== undefined) {
+      const old = activeStringSource.current.get(stringIndex);
+      if (old) {
+        try { old.stop(); } catch { /* already stopped */ }
+        activeStringSource.current.delete(stringIndex);
+        retrigger = true;
+      }
+    }
+    // Zero attack on retrigger — the string is already in motion, no ramp needed.
+    const source = playSample(frequency, startTime, volume, duration, context, samples, autoplaySources.current, retrigger ? 0 : undefined);
+    if (source && stringIndex !== undefined) {
+      activeStringSource.current.set(stringIndex, source);
+      source.addEventListener("ended", () => {
+        if (activeStringSource.current.get(stringIndex) === source) {
+          activeStringSource.current.delete(stringIndex);
+        }
+      }, { once: true });
+    }
+  }
+
+  function playMutedString(startTime: number, volume: number, slotDuration: number) {
+    const context = feedbackAudioContext.current;
+    if (!context || volume === 0) return;
+    // Clamp to avoid scheduling in the past (setTimeout drift on fast passages).
+    const now = context.currentTime;
+    if (startTime < now) startTime = now;
+    const duration = Math.min(0.035, slotDuration * 0.28);
+    const buffer = context.createBuffer(1, Math.ceil(context.sampleRate * duration), context.sampleRate);
+    const samples = buffer.getChannelData(0);
+    for (let i = 0; i < samples.length; i++) {
+      const envelope = Math.exp(-i / (context.sampleRate * 0.006));
+      samples[i] = (Math.random() * 2 - 1) * envelope;
     }
     const source = context.createBufferSource();
     const lowpass = context.createBiquadFilter();
-    const bodyLow = context.createBiquadFilter();
-    const bodyHigh = context.createBiquadFilter();
-    const compressor = context.createDynamicsCompressor();
     const gain = context.createGain();
-    autoplaySources.current.add(source);
-    source.addEventListener("ended", () => autoplaySources.current.delete(source), { once: true });
     source.buffer = buffer;
     lowpass.type = "lowpass";
-    lowpass.frequency.setValueAtTime(Math.min(1900, 1100 + frequency * 1.8), startTime);
-    lowpass.Q.setValueAtTime(0.7, startTime);
-    bodyLow.type = "peaking";
-    bodyLow.frequency.setValueAtTime(210, startTime);
-    bodyLow.Q.setValueAtTime(1.1, startTime);
-    bodyLow.gain.setValueAtTime(6, startTime);
-    bodyHigh.type = "peaking";
-    bodyHigh.frequency.setValueAtTime(480, startTime);
-    bodyHigh.Q.setValueAtTime(1.4, startTime);
-    bodyHigh.gain.setValueAtTime(3, startTime);
-    compressor.threshold.setValueAtTime(-20, startTime);
-    compressor.knee.setValueAtTime(14, startTime);
-    compressor.ratio.setValueAtTime(3, startTime);
-    compressor.attack.setValueAtTime(0.004, startTime);
-    compressor.release.setValueAtTime(0.12, startTime);
-    gain.gain.setValueAtTime(0.0001, startTime);
-    gain.gain.linearRampToValueAtTime(volume, startTime + 0.008);
+    lowpass.frequency.setValueAtTime(320, startTime);
+    lowpass.Q.setValueAtTime(0.6, startTime);
+    gain.gain.setValueAtTime(volume, startTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
     source.connect(lowpass);
-    lowpass.connect(bodyLow);
-    bodyLow.connect(bodyHigh);
-    bodyHigh.connect(compressor);
-    compressor.connect(gain);
+    lowpass.connect(gain);
     gain.connect(context.destination);
+    autoplaySources.current.add(source);
+    source.addEventListener("ended", () => autoplaySources.current.delete(source), { once: true });
     source.start(startTime);
     source.stop(startTime + duration);
   }
@@ -327,15 +343,18 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     if (step.type === "mute") return;
     if (step.type === "note") {
       const midi = (step.octave + 1) * 12 + NOTE_OFFSETS[step.note];
-      playPluck(440 * 2 ** ((midi - 69) / 12), startTime, 0.28, sustainDuration);
+      playPluck(440 * 2 ** ((midi - 69) / 12), startTime, 0.28, sustainDuration, step.string);
       return;
     }
     const chordName = step.chord;
     CHORDS[chordName].frets.forEach((fret, string) => {
-      if (fret === "x" || fret === "") return;
-      const frequency = OPEN_STRING_FREQUENCIES[string] * 2 ** (Number(fret) / 12);
       const timing = chordPluckTiming(string, sustainDuration);
-      playPluck(frequency, startTime + timing.delay, 0.11, timing.duration);
+      if (fret === "x" || fret === "") {
+        playMutedString(startTime + timing.delay, 0.05, timing.duration);
+        return;
+      }
+      const frequency = OPEN_STRING_FREQUENCIES[string] * 2 ** (Number(fret) / 12);
+      playPluck(frequency, startTime + timing.delay, 0.11, timing.duration, string);
     });
   }
 
