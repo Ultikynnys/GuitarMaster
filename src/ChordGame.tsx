@@ -35,7 +35,7 @@ const FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
 function stepLabel(step: ProgressionStep): string {
   if (step.type === "mute") return "Mute";
   if (step.type === "chord") return step.chord;
-  return `${step.note}${step.octave}`;
+  return `${step.note} ${step.octave}`;
 }
 
 function stepBeats(step: ProgressionStep): number {
@@ -184,7 +184,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const requiredFrames = currentIsChord ? REQUIRED_FRAMES : 2;
   const heardLabel = currentIsChord
     ? detectedChord?.name
-    : detectedPitch ? `${detectedPitch.note}${detectedPitch.octave}` : undefined;
+    : detectedPitch ? `${detectedPitch.note} ${detectedPitch.octave}` : undefined;
   const visualIndex = autoplaying && autoplayIndex >= 0 ? autoplayIndex : currentIndex;
   const visualStep = progression.steps[visualIndex] ?? progression.steps[0];
   const visualNextStep = progression.steps[(visualIndex + 1) % progression.steps.length];
