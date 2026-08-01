@@ -68,7 +68,7 @@ function shapeForStep(step: ProgressionStep): ChordShape {
   };
 }
 
-function ChordTab({ chord, nextChord }: { chord: ChordShape; nextChord: ChordShape }) {
+function ChordTab({ chord, nextChord, showArrows, showGhosts }: { chord: ChordShape; nextChord: ChordShape; showArrows: boolean; showGhosts: boolean }) {
   const diagramFrets = [...chord.frets].reverse();
   const diagramFingers = [...chord.fingerNumbers].reverse();
   const nextDiagramFrets = [...nextChord.frets].reverse();
@@ -108,11 +108,11 @@ function ChordTab({ chord, nextChord }: { chord: ChordShape; nextChord: ChordSha
               <i key={index}>
                 {currentPosition
                   ? <b className={`finger-${finger}`}>{finger}</b>
-                  : nextPosition && !currentPosition && <b className={`next-finger finger-${nextFinger}`}>{nextFinger}</b>}
+                  : showGhosts && nextPosition && !currentPosition && <b className={`next-finger finger-${nextFinger}`}>{nextFinger}</b>}
               </i>
             );
           })}
-          <svg className="finger-transitions" viewBox={`0 0 600 ${FRET_COUNT * 100}`} preserveAspectRatio="none" aria-hidden="true">
+          {showArrows && <svg className="finger-transitions" viewBox={`0 0 600 ${FRET_COUNT * 100}`} preserveAspectRatio="none" aria-hidden="true">
             <defs>
               {["1", "2", "3", "4"].map((finger) => <marker key={finger} id={`finger-arrow-${finger}`} className={`finger-${finger}`} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" /></marker>)}
             </defs>
@@ -123,7 +123,7 @@ function ChordTab({ chord, nextChord }: { chord: ChordShape; nextChord: ChordSha
               const y2 = (to.fret - 0.5) * 100;
               return <line key={`${finger}-${index}`} className={`finger-${finger}`} x1={x1} y1={y1} x2={x2} y2={y2} markerEnd={`url(#finger-arrow-${finger})`} />;
             })}
-          </svg>
+          </svg>}
           <div className="fret-inlays" aria-hidden="true">
             {FRET_MARKERS.map((fret) => <i key={fret} className={fret % 12 === 0 ? "double" : ""} style={{ "--fret-position": `${((fret - 0.5) / FRET_COUNT) * 100}%` } as CSSProperties} />)}
           </div>
@@ -154,6 +154,8 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const [bpm, setBpm] = useState(LEVELS[0].categories[0].progressions[0].recommendedBpm);
   const [autoplaying, setAutoplaying] = useState(false);
   const [autoplayIndex, setAutoplayIndex] = useState(-1);
+  const [showArrows, setShowArrows] = useState(true);
+  const [showGhosts, setShowGhosts] = useState(true);
   const startedAt = useRef(0);
   const feedbackAudioContext = useRef<AudioContext | null>(null);
   const autoplayTimer = useRef<number | null>(null);
@@ -562,6 +564,28 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
                 <i />
               </label>
             </div>
+            <div className="autoplay-toggle">
+              <div><strong>Finger arrows</strong><span>Show transition arrows between chords</span></div>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={showArrows}
+                  onChange={(event) => setShowArrows(event.target.checked)}
+                />
+                <i />
+              </label>
+            </div>
+            <div className="autoplay-toggle">
+              <div><strong>Next-finger ghosts</strong><span>Show semi-transparent upcoming positions</span></div>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={showGhosts}
+                  onChange={(event) => setShowGhosts(event.target.checked)}
+                />
+                <i />
+              </label>
+            </div>
           </div>
 
           <div className="sequence" aria-label="Progression sequence">
@@ -639,7 +663,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
           <div className={`game-chord-name ${visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
         </div>
         <div className="tab-panel">
-          <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} />
+          <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} showArrows={showArrows} showGhosts={showGhosts} />
         </div>
       </div>
     </section>
