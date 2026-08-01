@@ -596,7 +596,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
                 style={{ "--duration-hue": durationHue(stepBeats(step)) } as CSSProperties}
               >
                 <span>{index < currentIndex ? "OK" : String(index + 1).padStart(2, "0")}</span>
-                <strong>{stepLabel(step)}</strong>
+                <strong className={stepLabel(step).length > 4 ? "label-long" : stepLabel(step).length > 2 ? "label-medium" : ""}>{stepLabel(step)}</strong>
                 <small>{formatBeats(stepBeats(step))}</small>
               </div>
             ))}
