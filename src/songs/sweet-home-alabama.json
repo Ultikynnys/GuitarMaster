@@ -140,11 +140,7 @@
       "string": 3,
       "fret": 0,
       "finger": "",
-      "beats": 0.5
-    },
-    {
-      "type": "mute",
-      "beats": 0.5
+      "beats": 1
     }
   ]
 }

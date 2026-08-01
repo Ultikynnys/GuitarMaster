@@ -7,15 +7,19 @@
   "recommendedBpm": 132,
   "beatsPerBar": 4,
   "steps": [
-    { "type": "chord", "chord": "Em", "beats": 1.5 },
-    { "type": "mute", "beats": 0.5 },
     { "type": "chord", "chord": "Em", "beats": 1 },
-    { "type": "chord", "chord": "Em", "beats": 0.75 },
-    { "type": "mute", "beats": 0.25 },
-    { "type": "chord", "chord": "G", "beats": 1.5 },
+    { "type": "chord", "chord": "Em", "beats": 0.5 },
+    { "type": "chord", "chord": "Em", "beats": 0.5 },
     { "type": "mute", "beats": 0.5 },
+    { "type": "chord", "chord": "Em", "beats": 0.5 },
+    { "type": "chord", "chord": "Em", "beats": 0.5 },
+    { "type": "chord", "chord": "Em", "beats": 0.5 },
     { "type": "chord", "chord": "G", "beats": 1 },
-    { "type": "chord", "chord": "G", "beats": 0.75 },
-    { "type": "mute", "beats": 0.25 }
+    { "type": "chord", "chord": "G", "beats": 0.5 },
+    { "type": "chord", "chord": "G", "beats": 0.5 },
+    { "type": "mute", "beats": 0.5 },
+    { "type": "chord", "chord": "G", "beats": 0.5 },
+    { "type": "chord", "chord": "G", "beats": 0.5 },
+    { "type": "chord", "chord": "G", "beats": 0.5 }
   ]
 }

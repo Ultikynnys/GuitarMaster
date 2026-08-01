@@ -38,9 +38,27 @@ describe("song catalog", () => {
       "zeldas-lullaby": 3,
     });
 
-    const gerudo = songs.find((song) => song.id === "gerudo-valley")!;
-    const fingers = Object.fromEntries(gerudo.steps.filter((step) => step.type === "note").map((step) => [`${step.string}:${step.fret}`, step.finger]));
-    expect(fingers).toEqual({ "2:6": "3", "1:5": "2", "1:7": "4", "0:5": "2", "0:4": "1", "2:4": "1", "2:7": "4", "1:6": "3" });
+    const songBeats = (id: string) => songs.find((song) => song.id === id)!.steps.reduce((total, step) => total + step.beats, 0);
+    const expectedBars = {
+      "knockin-heavens-door": 4, zombie: 8, "smoke-on-the-water": 4, "mario-ground-simple": 3, "zeldas-lullaby": 4, "final-fantasy-victory-fanfare": 3,
+      "about-a-girl": 2, "seven-nation-army": 2, "sunshine-of-your-love": 2, "iron-man": 4, "tetris-theme": 4, "lost-woods": 4,
+      "bad-moon-rising": 4, "sweet-home-alabama": 2, californication: 4, "day-tripper": 2, "mario-ground-full": 3, megalovania: 8,
+      "back-in-black": 4, "hotel-california": 8, "enter-sandman": 2, "house-rising-sun": 4, "crazy-train": 2, "song-of-storms": 8,
+      thunderstruck: 2, "dont-fear-reaper": 2, "sweet-child-o-mine": 4, "at-dooms-gate": 1, "gerudo-valley": 4, "final-fantasy-prelude": 1,
+    };
+    expect(Object.fromEntries(songs.map((song) => [song.id, Math.round(songBeats(song.id) / song.beatsPerBar)]))).toEqual(expectedBars);
+
+    const gerudoNotes = songs.find((song) => song.id === "gerudo-valley")!.steps.filter((step) => step.type === "note");
+    expect(gerudoNotes.slice(0, 4).map((step) => step.note)).toEqual(["C#", "F#", "G#", "A"]);
+    const noteNames = (id: string) => songs.find((song) => song.id === id)!.steps.filter((step) => step.type === "note").map((step) => step.note);
+    expect(noteNames("dont-fear-reaper")).toEqual(["A", "E", "A", "C", "G", "D", "G", "B", "F", "F", "A", "C", "G", "D", "G", "B"]);
+    expect(noteNames("megalovania").filter((_, index) => [2, 12, 22, 32].includes(index))).toEqual(["D", "D", "D", "D"]);
+    const ironMan = songs.find((song) => song.id === "iron-man")!;
+    expect(ironMan.recommendedBpm).toBe(155);
+    expect(songBeats("iron-man")).toBe(16);
+    for (const id of ["californication", "day-tripper", "sweet-home-alabama"]) {
+      expect(songs.find((song) => song.id === id)!.steps.at(-1)?.type).toBe("note");
+    }
   });
 
   test("requires a positive integer beatsPerBar", () => {
@@ -65,5 +83,11 @@ describe("song catalog", () => {
   test("rejects malformed mute durations with a clear source", () => {
     expect(() => parseSong({ id: "bad", name: "Bad", difficulty: "beginner", category: "rock", order: 1, recommendedBpm: 80, beatsPerBar: 4, steps: [{ type: "mute", beats: 0 }] }, "bad.json"))
       .toThrow("Invalid song JSON bad.json: step 1 beats must be positive");
+  });
+
+  test("rejects notes that do not match their guitar position", () => {
+    const song = { id: "pitch", name: "Pitch", difficulty: "beginner", category: "rock", order: 1, recommendedBpm: 80, beatsPerBar: 4, steps: [{ type: "note", note: "F", octave: 4, string: 0, fret: 0, finger: "", beats: 4 }] };
+    expect(() => parseSong(song, "pitch.json"))
+      .toThrow("Invalid song JSON pitch.json: step 1 F4 does not match string 0 fret 0");
   });
 });

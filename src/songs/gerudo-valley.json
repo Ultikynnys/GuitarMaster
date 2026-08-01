@@ -22,20 +22,20 @@
     },
     {
       "type": "note",
-      "note": "E",
-      "octave": 4,
-      "string": 1,
-      "fret": 5,
-      "finger": "2",
-      "beats": 0.25
-    },
-    {
-      "type": "note",
       "note": "F#",
       "octave": 4,
       "string": 1,
       "fret": 7,
       "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "G#",
+      "octave": 4,
+      "string": 0,
+      "fret": 4,
+      "finger": "1",
       "beats": 0.25
     },
     {
@@ -107,20 +107,20 @@
     },
     {
       "type": "note",
-      "note": "E",
-      "octave": 4,
-      "string": 1,
-      "fret": 5,
-      "finger": "2",
-      "beats": 0.25
-    },
-    {
-      "type": "note",
       "note": "F#",
       "octave": 4,
       "string": 1,
       "fret": 7,
       "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "G#",
+      "octave": 4,
+      "string": 0,
+      "fret": 4,
+      "finger": "1",
       "beats": 0.25
     },
     {

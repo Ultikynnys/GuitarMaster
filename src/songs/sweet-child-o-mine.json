@@ -23,7 +23,7 @@
     { "type": "note", "note": "A", "octave": 4, "string": 2, "fret": 14, "finger": "3", "beats": 0.5 },
     { "type": "note", "note": "F#", "octave": 5, "string": 0, "fret": 14, "finger": "3", "beats": 0.5 },
     { "type": "note", "note": "A", "octave": 4, "string": 2, "fret": 14, "finger": "3", "beats": 0.5 },
-    { "type": "note", "note": "G", "octave": 3, "string": 3, "fret": 5, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "G", "octave": 3, "string": 4, "fret": 10, "finger": "1", "beats": 0.5 },
     { "type": "note", "note": "D", "octave": 5, "string": 1, "fret": 15, "finger": "4", "beats": 0.5 },
     { "type": "note", "note": "A", "octave": 4, "string": 2, "fret": 14, "finger": "3", "beats": 0.5 },
     { "type": "note", "note": "G", "octave": 4, "string": 2, "fret": 12, "finger": "1", "beats": 0.5 },

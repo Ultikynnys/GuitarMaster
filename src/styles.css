@@ -200,7 +200,7 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .game-chord-name { position: relative; z-index: 1; min-width: 0; max-width: 100%; flex: 1; display: grid; place-items: center; color: #eee8dc; font-size: clamp(90px, 9vw, 145px); line-height: .85; letter-spacing: -.1em; font-weight: 600; text-align: center; overflow-wrap: anywhere; }
 .game-chord-name.medium-label { font-size: clamp(58px, 6.5vw, 96px); letter-spacing: -.06em; }
 .game-chord-name.long-label { font-size: clamp(36px, 4.5vw, 68px); line-height: .95; letter-spacing: -.04em; }
-.tab-panel { min-height: 540px; padding: 30px; display: flex; align-items: center; background: #13110f; }
+.tab-panel { min-height: 680px; padding: 30px; display: flex; align-items: center; background: #13110f; }
 .tab-card { position: relative; z-index: 1; width: 100%; padding: 0; }
 .tab-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
 .tab-heading strong { font-size: 18px; }
@@ -209,23 +209,32 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .string-status, .diagram-string-names { display: grid; grid-template-columns: repeat(6, 1fr); padding-right: 22px; color: #aaa399; font: 14px "DM Mono"; text-align: center; }
 .string-status { height: 26px; font-size: 16px; text-transform: uppercase; }
 .diagram-string-names { margin-top: 11px; color: #d0c8bc; font-size: 13px; font-weight: 700; }
-.fret-grid { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(7, 38px); margin-right: 22px; border-top: 4px solid #a9a196; border-bottom: 1px solid #59534a; }
+.fret-grid { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(24, 24px); margin-right: 22px; border-top: 4px solid #a9a196; border-bottom: 1px solid #59534a; }
 .fret-grid > i { position: relative; border-left: 1px solid #59534a; border-bottom: 1px solid #59534a; }
+.fret-grid > i:nth-child(6n+2), .fret-grid > i:nth-child(6n+4), .fret-grid > i:nth-child(6n+6) { background: rgba(255, 255, 255, .035); }
 .fret-grid > i:nth-child(6n) { border-right: 1px solid #59534a; }
-.fret-grid > i:nth-child(n+37) { border-bottom: 0; }
-.fret-grid > i b { position: absolute; z-index: 1; left: 50%; top: 50%; width: 31px; height: 31px; display: grid; place-items: center; border-radius: 50%; color: #11100e; background: #e8a83e; box-shadow: 0 0 0 4px #13110f; font: 700 13px "DM Mono"; transform: translate(-50%, -50%); }
-.fret-grid > i b.finger-1 { background: #e8a83e; }
-.fret-grid > i b.finger-2 { background: #6db9d1; }
-.fret-grid > i b.finger-3 { background: #a9ce67; }
-.fret-grid > i b.finger-4 { background: #d98caf; }
+.fret-grid > i:nth-child(n+139) { border-bottom: 0; }
+.fret-grid > i b { position: absolute; z-index: 3; left: 50%; top: 50%; width: 21px; height: 21px; display: grid; place-items: center; border-radius: 50%; color: #11100e; background: #e8a83e; box-shadow: 0 0 0 3px #13110f; font: 700 10px "DM Mono"; transform: translate(-50%, -50%); }
+.fret-grid > i b.finger-1 { --finger-rgb: 232, 168, 62; background: #e8a83e; }
+.fret-grid > i b.finger-2 { --finger-rgb: 109, 185, 209; background: #6db9d1; }
+.fret-grid > i b.finger-3 { --finger-rgb: 169, 206, 103; background: #a9ce67; }
+.fret-grid > i b.finger-4 { --finger-rgb: 217, 140, 175; background: #d98caf; }
 .fret-grid > i b.finger-5 { background: #a996e8; }
-.fret-grid > i b.next-finger { padding-top: 7px; border-radius: 0; opacity: .5; box-shadow: none; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.fret-grid > i b.next-finger { border: 1px solid rgba(var(--finger-rgb), .5); border-radius: 50%; background: repeating-linear-gradient(135deg, rgba(var(--finger-rgb), .5) 0 4px, transparent 4px 8px); box-shadow: none; }
+.finger-transitions { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.finger-transitions line { fill: none; stroke-width: 2; stroke-linecap: round; opacity: .8; vector-effect: non-scaling-stroke; }
+.finger-transitions line.finger-1 { stroke: #e8a83e; }
+.finger-transitions line.finger-2 { stroke: #6db9d1; }
+.finger-transitions line.finger-3 { stroke: #a9ce67; }
+.finger-transitions line.finger-4 { stroke: #d98caf; }
+.finger-transitions marker.finger-1 path { fill: #e8a83e; }
+.finger-transitions marker.finger-2 path { fill: #6db9d1; }
+.finger-transitions marker.finger-3 path { fill: #a9ce67; }
+.finger-transitions marker.finger-4 path { fill: #d98caf; }
 .fret-inlays { position: absolute; z-index: 0; inset: 0; pointer-events: none; }
-.fret-inlays i { position: absolute; left: 50%; width: 9px; height: 9px; border-radius: 50%; background: #817a70; box-shadow: 0 0 0 3px #13110f; transform: translate(-50%, -50%); }
-.fret-inlays i:first-child { top: 35.71%; }
-.fret-inlays i:nth-child(2) { top: 64.29%; }
-.fret-inlays i:last-child { top: 92.86%; }
-.fret-labels { position: absolute; inset: 0 -22px 0 auto; width: 18px; display: grid; grid-template-rows: repeat(7, 1fr); align-items: center; color: #d0c8bc; font: 700 12px "DM Mono"; text-align: right; }
+.fret-inlays i { position: absolute; top: var(--fret-position); left: 50%; width: 7px; height: 7px; border-radius: 50%; background: #817a70; box-shadow: 0 0 0 2px #13110f; transform: translate(-50%, -50%); }
+.fret-inlays i.double { width: 36px; border-radius: 0; background: radial-gradient(circle at 4px 50%, #817a70 0 3px, transparent 4px), radial-gradient(circle at 32px 50%, #817a70 0 3px, transparent 4px); box-shadow: none; }
+.fret-labels { position: absolute; inset: 0 -22px 0 auto; width: 18px; display: grid; grid-template-rows: repeat(24, 1fr); align-items: center; color: #d0c8bc; font: 700 9px "DM Mono"; text-align: right; }
 footer { height: 75px; display: flex; align-items: center; justify-content: space-between; color: #625e57; font: 9px "DM Mono"; letter-spacing: .08em; text-transform: uppercase; }
 
 @media (max-width: 850px) {
@@ -240,7 +249,7 @@ footer { height: 75px; display: flex; align-items: center; justify-content: spac
   .game-layout { grid-template-columns: 1fr 1fr; }
   .game-controls { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid #3b3730; }
   .current-chord { min-height: 440px; }
-  .tab-panel { min-height: 440px; padding: 25px; }
+  .tab-panel { min-height: 680px; padding: 25px; }
 }
 
 @media (max-width: 570px) {
@@ -264,6 +273,6 @@ footer { height: 75px; display: flex; align-items: center; justify-content: spac
   .game-chord-name { font-size: 100px; margin: 25px 0 10px; }
   .game-chord-name.medium-label { font-size: 72px; }
   .game-chord-name.long-label { font-size: 48px; }
-  .tab-panel { min-height: 500px; padding: 28px 24px; }
+  .tab-panel { min-height: 650px; padding: 28px 24px; }
   .tab-card { max-width: 430px; margin: auto; }
 }

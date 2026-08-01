@@ -33,6 +33,7 @@ Pass-through monitoring is optional and has its own volume. Use headphones when 
 - **Note/chord analyzer:** Shows the strongest note, octave, frequency, cents offset, signal level, and supported major or minor chord with confidence.
 - **Quick tuner:** Guides standard tuning from low E to high e, allows direct string selection, and advances after stable in-tune readings.
 - **Progression game:** Accepts notes and chords from the live input in sequence, uses timed mute steps, and tracks score, loops, and elapsed time.
+- **Full fretboard:** Displays all 24 frets, shades alternating strings, and draws movement arrows when the same finger changes position on the next step.
 - **Catalog:** Organizes songs into Beginner, Rhythm Player, Band Ready, Headliner, and Rock Star difficulties, with Rock and Video Games categories.
 
 ## Tempo And Playback
@@ -72,7 +73,7 @@ Every song is one JSON file in `src/songs/`; Vite imports the directory automati
 }
 ```
 
-`beatsPerBar` is required and must be a positive integer. Step `beats` values are positive beat durations; steps should be arranged so each musical bar totals `beatsPerBar`. In autoplay, note and chord `beats` control how long the sound is sustained before the next step. In live mode, notes and chords advance after stable detection rather than waiting their full written duration, while a mute means silence/rest and advances after its timed beat duration.
+`beatsPerBar` is required and must be a positive integer. Step `beats` values are positive beat durations; steps should be arranged so each musical bar totals `beatsPerBar`. In autoplay, note and chord `beats` control how long the sound is sustained before the next step. In live mode, notes and chords advance after stable detection rather than waiting their full written duration, while a mute means silence/rest and advances after its timed beat duration. Song validation also verifies that each written note and octave match its standard-tuned string and fret.
 
 Note string indexes run from highest to lowest pitch: `0` = high e, `1` = B, `2` = G, `3` = D, `4` = A, and `5` = low E. Open notes use fret `0` and an empty `finger`; fretted notes use finger `1` through `4`. Supported chord names are `A`, `Am`, `C`, `D`, `Dm`, `E`, `Em`, `F`, and `G`.
 

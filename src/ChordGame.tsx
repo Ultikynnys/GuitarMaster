@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { ChordResult, PitchResult } from "./audioDetection";
+import { chordPluckTiming, stepDurationSeconds } from "./playbackTiming";
 import { buildCatalog, type ProgressionStep } from "./songCatalog";
 
 type ChordShape = {
@@ -28,6 +29,8 @@ const DIAGRAM_STRING_NAMES = ["E", "A", "D", "G", "B", "e"];
 const TAB_STRING_NAMES = ["e", "B", "G", "D", "A", "E"];
 const OPEN_STRING_FREQUENCIES = [329.63, 246.94, 196, 146.83, 110, 82.41];
 const NOTE_OFFSETS: Record<string, number> = { C: 0, "C#": 1, D: 2, "D#": 3, E: 4, F: 5, "F#": 6, G: 7, "G#": 8, A: 9, "A#": 10, B: 11 };
+const FRET_COUNT = 24;
+const FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
 
 function stepLabel(step: ProgressionStep): string {
   if (step.type === "mute") return "Mute";
@@ -70,6 +73,19 @@ function ChordTab({ chord, nextChord }: { chord: ChordShape; nextChord: ChordSha
   const diagramFingers = [...chord.fingerNumbers].reverse();
   const nextDiagramFrets = [...nextChord.frets].reverse();
   const nextDiagramFingers = [...nextChord.fingerNumbers].reverse();
+  const fingerTransitions = ["1", "2", "3", "4"].flatMap((finger) => {
+    const positions = (frets: string[], fingers: string[]) => frets.flatMap((fret, string) => (
+      fingers[string] === finger && Number(fret) > 0 ? [{ string, fret: Number(fret) }] : []
+    ));
+    const currentPositions = positions(diagramFrets, diagramFingers);
+    const nextPositions = positions(nextDiagramFrets, nextDiagramFingers);
+    if (currentPositions.length === 0 || nextPositions.length === 0) return [];
+    return Array.from({ length: Math.max(currentPositions.length, nextPositions.length) }, (_, index) => ({
+      finger,
+      from: currentPositions[Math.min(index, currentPositions.length - 1)],
+      to: nextPositions[Math.min(index, nextPositions.length - 1)],
+    })).filter(({ from, to }) => from.string !== to.string || from.fret !== to.fret);
+  });
 
   return (
     <div className="tab-card">
@@ -81,7 +97,7 @@ function ChordTab({ chord, nextChord }: { chord: ChordShape; nextChord: ChordSha
           {diagramFrets.map((fret, index) => <span key={DIAGRAM_STRING_NAMES[index]}>{fret === "0" ? "o" : fret === "x" ? "x" : ""}</span>)}
         </div>
         <div className="fret-grid">
-          {Array.from({ length: 42 }, (_, index) => {
+          {Array.from({ length: FRET_COUNT * 6 }, (_, index) => {
             const fret = Math.floor(index / 6) + 1;
             const string = index % 6;
             const finger = diagramFingers[string];
@@ -97,8 +113,22 @@ function ChordTab({ chord, nextChord }: { chord: ChordShape; nextChord: ChordSha
               </i>
             );
           })}
-          <div className="fret-inlays" aria-hidden="true"><i /><i /><i /></div>
-          <div className="fret-labels"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></div>
+          <svg className="finger-transitions" viewBox={`0 0 600 ${FRET_COUNT * 100}`} preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              {["1", "2", "3", "4"].map((finger) => <marker key={finger} id={`finger-arrow-${finger}`} className={`finger-${finger}`} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" /></marker>)}
+            </defs>
+            {fingerTransitions.map(({ finger, from, to }, index) => {
+              const x1 = (from.string + 0.5) * 100;
+              const y1 = (from.fret - 0.5) * 100;
+              const x2 = (to.string + 0.5) * 100;
+              const y2 = (to.fret - 0.5) * 100;
+              return <line key={`${finger}-${index}`} className={`finger-${finger}`} x1={x1} y1={y1} x2={x2} y2={y2} markerEnd={`url(#finger-arrow-${finger})`} />;
+            })}
+          </svg>
+          <div className="fret-inlays" aria-hidden="true">
+            {FRET_MARKERS.map((fret) => <i key={fret} className={fret % 12 === 0 ? "double" : ""} style={{ "--fret-position": `${((fret - 0.5) / FRET_COUNT) * 100}%` } as CSSProperties} />)}
+          </div>
+          <div className="fret-labels">{Array.from({ length: FRET_COUNT }, (_, index) => <span key={index + 1}>{index + 1}</span>)}</div>
         </div>
         <div className="diagram-string-names">
           {DIAGRAM_STRING_NAMES.map((name) => <span key={name}>{name}</span>)}
@@ -128,6 +158,8 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const startedAt = useRef(0);
   const feedbackAudioContext = useRef<AudioContext | null>(null);
   const autoplayTimer = useRef<number | null>(null);
+  const autoplayGeneration = useRef(0);
+  const autoplaySources = useRef(new Set<AudioBufferSourceNode>());
   const metronomeTimer = useRef<number | null>(null);
   const metronomeBeat = useRef(0);
   const bpmRef = useRef(bpm);
@@ -182,11 +214,11 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     return stopMetronome;
   }, [metronomeEnabled, progression.id]);
 
-  function prepareFeedbackAudio() {
+  async function prepareFeedbackAudio() {
     if (!feedbackAudioContext.current || feedbackAudioContext.current.state === "closed") {
       feedbackAudioContext.current = new AudioContext({ latencyHint: "interactive" });
     }
-    if (feedbackAudioContext.current.state === "suspended") void feedbackAudioContext.current.resume();
+    if (feedbackAudioContext.current.state === "suspended") await feedbackAudioContext.current.resume();
   }
 
   function playClick(kind: "tick" | "tock", volume: number, delay = 0) {
@@ -255,6 +287,8 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     const bodyHigh = context.createBiquadFilter();
     const compressor = context.createDynamicsCompressor();
     const gain = context.createGain();
+    autoplaySources.current.add(source);
+    source.addEventListener("ended", () => autoplaySources.current.delete(source), { once: true });
     source.buffer = buffer;
     lowpass.type = "lowpass";
     lowpass.frequency.setValueAtTime(Math.min(1900, 1100 + frequency * 1.8), startTime);
@@ -285,49 +319,66 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     source.stop(startTime + duration);
   }
 
-  function previewStep(step: ProgressionStep, stepBpm: number) {
+  function previewStep(step: ProgressionStep, stepBpm: number, startTime: number) {
     const context = feedbackAudioContext.current;
     if (!context) return;
-    const sustainDuration = Math.max(0.12, (60 / stepBpm) * stepBeats(step));
-    const startTime = context.currentTime + 0.015;
+    const sustainDuration = stepDurationSeconds(stepBeats(step), stepBpm);
     if (step.type === "mute") return;
     if (step.type === "note") {
       const midi = (step.octave + 1) * 12 + NOTE_OFFSETS[step.note];
-      playPluck(440 * 2 ** ((midi - 69) / 12), startTime, 0.28, sustainDuration * 0.96);
+      playPluck(440 * 2 ** ((midi - 69) / 12), startTime, 0.28, sustainDuration);
       return;
     }
     const chordName = step.chord;
     CHORDS[chordName].frets.forEach((fret, string) => {
       if (fret === "x" || fret === "") return;
       const frequency = OPEN_STRING_FREQUENCIES[string] * 2 ** (Number(fret) / 12);
-      playPluck(frequency, startTime + (5 - string) * 0.018, 0.11, sustainDuration * 0.96);
+      const timing = chordPluckTiming(string, sustainDuration);
+      playPluck(frequency, startTime + timing.delay, 0.11, timing.duration);
     });
   }
 
   function stopAutoplay() {
+    autoplayGeneration.current += 1;
     if (autoplayTimer.current !== null) window.clearTimeout(autoplayTimer.current);
     autoplayTimer.current = null;
+    for (const source of autoplaySources.current) {
+      try {
+        source.stop();
+      } catch {
+        // The source may already have ended between iteration and cancellation.
+      }
+    }
+    autoplaySources.current.clear();
     setAutoplaying(false);
     setAutoplayIndex(-1);
   }
 
-  function scheduleAutoplayStep(index: number) {
+  function scheduleAutoplayStep(index: number, startTime: number, generation: number) {
+    if (generation !== autoplayGeneration.current) return;
+    const context = feedbackAudioContext.current;
+    if (!context) return;
     const step = progression.steps[index];
     const stepBpm = bpmRef.current;
+    const duration = stepDurationSeconds(stepBeats(step), stepBpm);
     setAutoplayIndex(index);
-    previewStep(step, stepBpm);
+    previewStep(step, stepBpm, startTime);
+    const nextStartTime = startTime + duration;
     autoplayTimer.current = window.setTimeout(() => {
-      scheduleAutoplayStep((index + 1) % progression.steps.length);
-    }, (60_000 / stepBpm) * stepBeats(step));
+      scheduleAutoplayStep((index + 1) % progression.steps.length, nextStartTime, generation);
+    }, Math.max(0, (nextStartTime - context.currentTime) * 1000 - 30));
   }
 
-  function startAutoplay() {
+  async function startAutoplay() {
     if (mode === "playing") return;
-    prepareFeedbackAudio();
     stopAutoplay();
+    const generation = autoplayGeneration.current;
+    await prepareFeedbackAudio();
+    if (generation !== autoplayGeneration.current) return;
     if (metronomeEnabled) startMetronome();
     setAutoplaying(true);
-    scheduleAutoplayStep(0);
+    const context = feedbackAudioContext.current;
+    if (context) scheduleAutoplayStep(0, context.currentTime + 0.03, generation);
   }
 
   useEffect(() => {
@@ -493,7 +544,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
                   type="checkbox"
                   checked={autoplaying}
                   disabled={mode === "playing"}
-                  onChange={(event) => event.target.checked ? startAutoplay() : stopAutoplay()}
+                  onChange={(event) => event.target.checked ? void startAutoplay() : stopAutoplay()}
                 />
                 <i />
               </label>

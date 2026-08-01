@@ -11,10 +11,10 @@
     { "type": "note", "note": "C", "octave": 4, "string": 1, "fret": 1, "finger": "1", "beats": 0.5 },
     { "type": "note", "note": "C", "octave": 4, "string": 1, "fret": 1, "finger": "1", "beats": 0.5 },
     { "type": "note", "note": "C", "octave": 4, "string": 1, "fret": 1, "finger": "1", "beats": 1.5 },
-    { "type": "note", "note": "G#", "octave": 4, "string": 0, "fret": 4, "finger": "2", "beats": 0.5 },
-    { "type": "note", "note": "A#", "octave": 4, "string": 0, "fret": 6, "finger": "4", "beats": 0.5 },
-    { "type": "note", "note": "C", "octave": 5, "string": 0, "fret": 8, "finger": "4", "beats": 2 },
+    { "type": "note", "note": "G#", "octave": 4, "string": 0, "fret": 4, "finger": "2", "beats": 1.5 },
+    { "type": "note", "note": "A#", "octave": 4, "string": 0, "fret": 6, "finger": "4", "beats": 1.5 },
+    { "type": "note", "note": "C", "octave": 5, "string": 0, "fret": 8, "finger": "4", "beats": 1 },
     { "type": "note", "note": "A#", "octave": 4, "string": 0, "fret": 6, "finger": "2", "beats": 0.5 },
-    { "type": "note", "note": "C", "octave": 5, "string": 0, "fret": 8, "finger": "4", "beats": 1.5 }
+    { "type": "note", "note": "C", "octave": 5, "string": 0, "fret": 8, "finger": "4", "beats": 4.5 }
   ]
 }

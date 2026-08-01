@@ -31,6 +31,8 @@ export type MusicCategory = { id: CategoryId; name: string; progressions: Progre
 export type DifficultyLevel = { id: DifficultyId; name: string; categories: MusicCategory[] };
 
 const NOTE_NAMES = new Set(["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
+const NOTE_OFFSETS: Record<string, number> = { C: 0, "C#": 1, D: 2, "D#": 3, E: 4, F: 5, "F#": 6, G: 7, "G#": 8, A: 9, "A#": 10, B: 11 };
+const OPEN_STRING_MIDI = [64, 59, 55, 50, 45, 40];
 const CHORD_NAMES = new Set(["A", "Am", "C", "D", "Dm", "E", "Em", "F", "G"]);
 const DIFFICULTY_IDS = new Set<string>(DIFFICULTIES.map(({ id }) => id));
 const CATEGORY_IDS = new Set<string>(CATEGORIES.map(({ id }) => id));
@@ -68,6 +70,9 @@ export function parseSong(value: unknown, source = "<unknown>"): Progression {
     if (!Number.isInteger(step.octave) || (step.octave as number) < 0 || (step.octave as number) > 8) fail(source, `${location} octave must be an integer from 0 to 8`);
     if (!Number.isInteger(step.string) || (step.string as number) < 0 || (step.string as number) > 5) fail(source, `${location} string must be an integer from 0 to 5`);
     if (!Number.isInteger(step.fret) || (step.fret as number) < 0 || (step.fret as number) > 24) fail(source, `${location} fret must be an integer from 0 to 24`);
+    const writtenMidi = ((step.octave as number) + 1) * 12 + NOTE_OFFSETS[step.note as string];
+    const frettedMidi = OPEN_STRING_MIDI[step.string as number] + (step.fret as number);
+    if (writtenMidi !== frettedMidi) fail(source, `${location} ${String(step.note)}${String(step.octave)} does not match string ${String(step.string)} fret ${String(step.fret)}`);
     const validFinger = step.fret === 0 ? step.finger === "" : typeof step.finger === "string" && /^[1-4]$/.test(step.finger);
     if (!validFinger) fail(source, `${location} finger must be empty for an open string or 1 through 4 for a fretted note`);
   });

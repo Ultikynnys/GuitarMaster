@@ -10,17 +10,22 @@
     {
       "type": "chord",
       "chord": "D",
-      "beats": 1
+      "beats": 2
     },
     {
       "type": "chord",
       "chord": "A",
-      "beats": 0.5
+      "beats": 1
     },
     {
       "type": "chord",
       "chord": "G",
-      "beats": 0.5
+      "beats": 1
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 4
     },
     {
       "type": "chord",
@@ -29,23 +34,18 @@
     },
     {
       "type": "chord",
-      "chord": "D",
+      "chord": "A",
       "beats": 1
     },
     {
       "type": "chord",
-      "chord": "A",
-      "beats": 0.5
-    },
-    {
-      "type": "chord",
       "chord": "G",
-      "beats": 0.5
+      "beats": 1
     },
     {
       "type": "chord",
       "chord": "D",
-      "beats": 2
+      "beats": 4
     }
   ]
 }

@@ -36,11 +36,11 @@
     },
     {
       "type": "note",
-      "note": "G",
-      "octave": 3,
-      "string": 2,
-      "fret": 0,
-      "finger": "",
+      "note": "C",
+      "octave": 4,
+      "string": 1,
+      "fret": 1,
+      "finger": "1",
       "beats": 0.5
     },
     {
@@ -50,15 +50,6 @@
       "string": 5,
       "fret": 3,
       "finger": "3",
-      "beats": 0.5
-    },
-    {
-      "type": "note",
-      "note": "B",
-      "octave": 2,
-      "string": 4,
-      "fret": 2,
-      "finger": "2",
       "beats": 0.5
     },
     {
@@ -75,6 +66,15 @@
       "note": "G",
       "octave": 3,
       "string": 2,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "B",
+      "octave": 3,
+      "string": 1,
       "fret": 0,
       "finger": "",
       "beats": 0.5
@@ -90,29 +90,29 @@
     },
     {
       "type": "note",
-      "note": "C",
+      "note": "F",
       "octave": 3,
-      "string": 4,
+      "string": 3,
       "fret": 3,
       "finger": "3",
       "beats": 0.5
     },
     {
       "type": "note",
-      "note": "D",
+      "note": "A",
       "octave": 3,
-      "string": 3,
-      "fret": 0,
-      "finger": "",
+      "string": 2,
+      "fret": 2,
+      "finger": "2",
       "beats": 0.5
     },
     {
       "type": "note",
-      "note": "G",
-      "octave": 3,
-      "string": 2,
-      "fret": 0,
-      "finger": "",
+      "note": "C",
+      "octave": 4,
+      "string": 1,
+      "fret": 1,
+      "finger": "1",
       "beats": 0.5
     },
     {
@@ -126,15 +126,6 @@
     },
     {
       "type": "note",
-      "note": "B",
-      "octave": 2,
-      "string": 4,
-      "fret": 2,
-      "finger": "2",
-      "beats": 0.5
-    },
-    {
-      "type": "note",
       "note": "D",
       "octave": 3,
       "string": 3,
@@ -147,6 +138,15 @@
       "note": "G",
       "octave": 3,
       "string": 2,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "B",
+      "octave": 3,
+      "string": 1,
       "fret": 0,
       "finger": "",
       "beats": 0.5
