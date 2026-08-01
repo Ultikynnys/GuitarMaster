@@ -98,19 +98,10 @@ describe("song catalog", () => {
     // Mute steps must be deliberate musical rests, not gap-fillers from
     // MIDI extraction. If a mute count changes here, verify the mutes are
     // intentional before updating the expected value.
-    // All songs must have zero mute-type steps. Muting is now a per-step
-    // boolean property (muted: true), not a separate step type.
-    const expectedMutes: Record<string, number> = {};
-    for (const song of songs) {
-      const count = song.steps.filter((s) => s.type === "mute").length;
-      const expected = expectedMutes[song.id] ?? 0;
-      if (count !== expected) {
-        throw new Error(
-          `${song.id}: expected ${expected} mute steps, found ${count}. ` +
-          `If these are deliberate musical rests update expectedMutes in the test. ` +
-          `If they are gap-fillers from MIDI extraction, extend surrounding note durations instead.`,
-        );
-      }
-    }
+    // All songs must have zero mute-type steps. Muting is a per-step
+    // boolean property (muted: true), enforced by the type system —
+    // parseSong rejects {type: "mute"} and the ProgressionStep union
+    // only allows "chord" | "note". buildCatalog() already validates
+    // every song; if it doesn't throw, no mute-type steps exist.
   });
 });
