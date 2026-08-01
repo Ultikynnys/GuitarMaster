@@ -11,10 +11,12 @@ async function loadSongs() {
 }
 
 describe("song catalog", () => {
+  let songs: ReturnType<typeof parseSong>[] = [];
+
   test("contains exactly 30 valid, uniquely ordered songs", async () => {
     const { files, documents } = await loadSongs();
     const catalog = buildCatalog(documents);
-    const songs = catalog.flatMap((level) => level.categories.flatMap((category) => category.progressions));
+    songs = catalog.flatMap((level) => level.categories.flatMap((category) => category.progressions));
     expect(files).toHaveLength(30);
     expect(songs).toHaveLength(30);
     expect(new Set(songs.map((song) => song.id)).size).toBe(30);
@@ -89,5 +91,26 @@ describe("song catalog", () => {
     const song = { id: "pitch", name: "Pitch", difficulty: "beginner", category: "rock", order: 1, recommendedBpm: 80, beatsPerBar: 4, steps: [{ type: "note", note: "F", octave: 4, string: 0, fret: 0, finger: "", beats: 4 }] };
     expect(() => parseSong(song, "pitch.json"))
       .toThrow("Invalid song JSON pitch.json: step 1 F4 does not match string 0 fret 0");
+  });
+
+  test("no song has accidental gap-filler mute steps", () => {
+    // Mute steps must be deliberate musical rests, not gap-fillers from
+    // MIDI extraction. If a mute count changes here, verify the mutes are
+    // intentional before updating the expected value.
+    const expectedMutes: Record<string, number> = {
+      "about-a-girl": 2,
+      "gerudo-valley": 4,
+    };
+    for (const song of songs) {
+      const count = song.steps.filter((s) => s.type === "mute").length;
+      const expected = expectedMutes[song.id] ?? 0;
+      if (count !== expected) {
+        throw new Error(
+          `${song.id}: expected ${expected} mute steps, found ${count}. ` +
+          `If these are deliberate musical rests update expectedMutes in the test. ` +
+          `If they are gap-fillers from MIDI extraction, extend surrounding note durations instead.`,
+        );
+      }
+    }
   });
 });
