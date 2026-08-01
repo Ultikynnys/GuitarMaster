@@ -1,0 +1,51 @@
+{
+  "id": "zombie",
+  "name": "Zombie - Verse Cycle",
+  "difficulty": "beginner",
+  "category": "rock",
+  "order": 2,
+  "recommendedBpm": 84,
+  "beatsPerBar": 4,
+  "steps": [
+    {
+      "type": "chord",
+      "chord": "Em",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "C",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "G",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "Em",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "C",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "G",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 4
+    }
+  ]
+}

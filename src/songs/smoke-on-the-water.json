@@ -1,0 +1,24 @@
+{
+  "id": "smoke-on-the-water",
+  "name": "Smoke on the Water - Single-Note Riff",
+  "difficulty": "beginner",
+  "category": "rock",
+  "order": 3,
+  "recommendedBpm": 112,
+  "beatsPerBar": 4,
+  "steps": [
+    { "type": "note", "note": "G", "octave": 3, "string": 3, "fret": 5, "finger": "1", "beats": 1 },
+    { "type": "note", "note": "A#", "octave": 3, "string": 3, "fret": 8, "finger": "3", "beats": 1 },
+    { "type": "note", "note": "C", "octave": 4, "string": 3, "fret": 10, "finger": "4", "beats": 1.5 },
+    { "type": "mute", "beats": 0.5 },
+    { "type": "note", "note": "G", "octave": 3, "string": 3, "fret": 5, "finger": "1", "beats": 1 },
+    { "type": "note", "note": "A#", "octave": 3, "string": 3, "fret": 8, "finger": "3", "beats": 1 },
+    { "type": "note", "note": "C#", "octave": 4, "string": 3, "fret": 11, "finger": "4", "beats": 0.5 },
+    { "type": "note", "note": "C", "octave": 4, "string": 3, "fret": 10, "finger": "3", "beats": 1.5 },
+    { "type": "note", "note": "G", "octave": 3, "string": 3, "fret": 5, "finger": "1", "beats": 1 },
+    { "type": "note", "note": "A#", "octave": 3, "string": 3, "fret": 8, "finger": "3", "beats": 1 },
+    { "type": "note", "note": "C", "octave": 4, "string": 3, "fret": 10, "finger": "4", "beats": 1 },
+    { "type": "note", "note": "A#", "octave": 3, "string": 3, "fret": 8, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "G", "octave": 3, "string": 3, "fret": 5, "finger": "1", "beats": 4.5 }
+  ]
+}

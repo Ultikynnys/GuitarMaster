@@ -1,0 +1,306 @@
+{
+  "id": "gerudo-valley",
+  "name": "Gerudo Valley - Main Lead Phrase",
+  "difficulty": "rock-star",
+  "category": "video-games",
+  "order": 2,
+  "recommendedBpm": 120,
+  "beatsPerBar": 4,
+  "steps": [
+    {
+      "type": "mute",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "C#",
+      "octave": 4,
+      "string": 2,
+      "fret": 6,
+      "finger": "3",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 4,
+      "string": 1,
+      "fret": 5,
+      "finger": "2",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 4,
+      "string": 0,
+      "fret": 5,
+      "finger": "2",
+      "beats": 0.75
+    },
+    {
+      "type": "note",
+      "note": "C#",
+      "octave": 4,
+      "string": 2,
+      "fret": 6,
+      "finger": "3",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "G#",
+      "octave": 4,
+      "string": 0,
+      "fret": 4,
+      "finger": "1",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 4,
+      "string": 0,
+      "fret": 5,
+      "finger": "2",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "G#",
+      "octave": 4,
+      "string": 0,
+      "fret": 4,
+      "finger": "1",
+      "beats": 1
+    },
+    {
+      "type": "mute",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "C#",
+      "octave": 4,
+      "string": 2,
+      "fret": 6,
+      "finger": "3",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 4,
+      "string": 1,
+      "fret": 5,
+      "finger": "2",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 4,
+      "string": 0,
+      "fret": 5,
+      "finger": "2",
+      "beats": 0.75
+    },
+    {
+      "type": "note",
+      "note": "C#",
+      "octave": 4,
+      "string": 2,
+      "fret": 6,
+      "finger": "3",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "G#",
+      "octave": 4,
+      "string": 0,
+      "fret": 4,
+      "finger": "1",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 4,
+      "string": 0,
+      "fret": 5,
+      "finger": "2",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "G#",
+      "octave": 4,
+      "string": 0,
+      "fret": 4,
+      "finger": "1",
+      "beats": 1
+    },
+    {
+      "type": "mute",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "B",
+      "octave": 3,
+      "string": 2,
+      "fret": 4,
+      "finger": "1",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "D",
+      "octave": 4,
+      "string": 2,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 4,
+      "string": 1,
+      "fret": 5,
+      "finger": "2",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.75
+    },
+    {
+      "type": "note",
+      "note": "B",
+      "octave": 3,
+      "string": 2,
+      "fret": 4,
+      "finger": "1",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 4,
+      "string": 1,
+      "fret": 5,
+      "finger": "2",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "G#",
+      "octave": 4,
+      "string": 0,
+      "fret": 4,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 1
+    },
+    {
+      "type": "mute",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "G#",
+      "octave": 4,
+      "string": 0,
+      "fret": 4,
+      "finger": "1",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F#",
+      "octave": 4,
+      "string": 1,
+      "fret": 7,
+      "finger": "4",
+      "beats": 0.25
+    },
+    {
+      "type": "note",
+      "note": "F",
+      "octave": 4,
+      "string": 1,
+      "fret": 6,
+      "finger": "3",
+      "beats": 3
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": "bad-moon-rising",
+  "name": "Bad Moon Rising - Rhythm Hook",
+  "difficulty": "band-ready",
+  "category": "rock",
+  "order": 1,
+  "recommendedBpm": 180,
+  "beatsPerBar": 4,
+  "steps": [
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 1
+    },
+    {
+      "type": "chord",
+      "chord": "A",
+      "beats": 0.5
+    },
+    {
+      "type": "chord",
+      "chord": "G",
+      "beats": 0.5
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 2
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 1
+    },
+    {
+      "type": "chord",
+      "chord": "A",
+      "beats": 0.5
+    },
+    {
+      "type": "chord",
+      "chord": "G",
+      "beats": 0.5
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 2
+    }
+  ]
+}

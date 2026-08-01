@@ -1,0 +1,150 @@
+{
+  "id": "sweet-home-alabama",
+  "name": "Sweet Home Alabama - Intro Picking",
+  "difficulty": "band-ready",
+  "category": "rock",
+  "order": 2,
+  "recommendedBpm": 100,
+  "beatsPerBar": 4,
+  "steps": [
+    {
+      "type": "note",
+      "note": "D",
+      "octave": 3,
+      "string": 3,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "D",
+      "octave": 3,
+      "string": 3,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 3,
+      "string": 2,
+      "fret": 2,
+      "finger": "2",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "D",
+      "octave": 4,
+      "string": 1,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "C",
+      "octave": 3,
+      "string": 4,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "C",
+      "octave": 3,
+      "string": 4,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "G",
+      "octave": 3,
+      "string": 2,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "D",
+      "octave": 4,
+      "string": 1,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "G",
+      "octave": 2,
+      "string": 5,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "G",
+      "octave": 2,
+      "string": 5,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "D",
+      "octave": 3,
+      "string": 3,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "G",
+      "octave": 3,
+      "string": 2,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "D",
+      "octave": 4,
+      "string": 1,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "G",
+      "octave": 3,
+      "string": 2,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "D",
+      "octave": 3,
+      "string": 3,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "mute",
+      "beats": 0.5
+    }
+  ]
+}

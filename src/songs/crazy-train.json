@@ -1,0 +1,27 @@
+{
+  "id": "crazy-train",
+  "name": "Crazy Train - Opening Riff",
+  "difficulty": "headliner",
+  "category": "rock",
+  "order": 5,
+  "recommendedBpm": 138,
+  "beatsPerBar": 4,
+  "steps": [
+    { "type": "note", "note": "F#", "octave": 2, "string": 5, "fret": 2, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "F#", "octave": 2, "string": 5, "fret": 2, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "C#", "octave": 3, "string": 4, "fret": 4, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "F#", "octave": 2, "string": 5, "fret": 2, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "D", "octave": 3, "string": 4, "fret": 5, "finger": "4", "beats": 0.5 },
+    { "type": "note", "note": "F#", "octave": 2, "string": 5, "fret": 2, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "C#", "octave": 3, "string": 4, "fret": 4, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "F#", "octave": 2, "string": 5, "fret": 2, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "B", "octave": 2, "string": 4, "fret": 2, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "A", "octave": 2, "string": 5, "fret": 5, "finger": "4", "beats": 0.5 },
+    { "type": "note", "note": "G#", "octave": 2, "string": 5, "fret": 4, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "B", "octave": 2, "string": 4, "fret": 2, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "A", "octave": 2, "string": 5, "fret": 5, "finger": "4", "beats": 0.5 },
+    { "type": "note", "note": "G#", "octave": 2, "string": 5, "fret": 4, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "E", "octave": 2, "string": 5, "fret": 0, "finger": "", "beats": 0.5 },
+    { "type": "note", "note": "F#", "octave": 2, "string": 5, "fret": 2, "finger": "1", "beats": 0.5 }
+  ]
+}

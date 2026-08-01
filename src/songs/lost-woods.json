@@ -1,0 +1,31 @@
+{
+  "id": "lost-woods",
+  "name": "Lost Woods - Saria's Song Melody",
+  "difficulty": "rhythm-player",
+  "category": "video-games",
+  "order": 2,
+  "recommendedBpm": 140,
+  "beatsPerBar": 4,
+  "steps": [
+    { "type": "note", "note": "F", "octave": 4, "string": 0, "fret": 1, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "A", "octave": 4, "string": 0, "fret": 5, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "B", "octave": 4, "string": 0, "fret": 7, "finger": "3", "beats": 1 },
+    { "type": "note", "note": "F", "octave": 4, "string": 0, "fret": 1, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "A", "octave": 4, "string": 0, "fret": 5, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "B", "octave": 4, "string": 0, "fret": 7, "finger": "3", "beats": 1 },
+    { "type": "note", "note": "F", "octave": 4, "string": 0, "fret": 1, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "A", "octave": 4, "string": 0, "fret": 5, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "B", "octave": 4, "string": 0, "fret": 7, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "E", "octave": 4, "string": 0, "fret": 0, "finger": "", "beats": 0.5 },
+    { "type": "note", "note": "D", "octave": 4, "string": 1, "fret": 3, "finger": "3", "beats": 2 },
+    { "type": "note", "note": "B", "octave": 3, "string": 1, "fret": 0, "finger": "", "beats": 0.5 },
+    { "type": "note", "note": "C", "octave": 4, "string": 1, "fret": 1, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "B", "octave": 3, "string": 1, "fret": 0, "finger": "", "beats": 0.5 },
+    { "type": "note", "note": "G", "octave": 3, "string": 2, "fret": 0, "finger": "", "beats": 0.5 },
+    { "type": "note", "note": "E", "octave": 4, "string": 0, "fret": 0, "finger": "", "beats": 2 },
+    { "type": "note", "note": "D", "octave": 4, "string": 1, "fret": 3, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "E", "octave": 4, "string": 0, "fret": 0, "finger": "", "beats": 0.5 },
+    { "type": "note", "note": "G", "octave": 4, "string": 0, "fret": 3, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "E", "octave": 4, "string": 0, "fret": 0, "finger": "", "beats": 2.5 }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": "hotel-california",
+  "name": "Hotel California - Capo 2 Cycle",
+  "difficulty": "headliner",
+  "category": "rock",
+  "order": 2,
+  "recommendedBpm": 75,
+  "beatsPerBar": 4,
+  "steps": [
+    {
+      "type": "chord",
+      "chord": "Am",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "E",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "G",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "F",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "C",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "Dm",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "E",
+      "beats": 4
+    }
+  ]
+}

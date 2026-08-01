@@ -1,0 +1,21 @@
+{
+  "id": "sunshine-of-your-love",
+  "name": "Sunshine of Your Love - Main Riff",
+  "difficulty": "rhythm-player",
+  "category": "rock",
+  "order": 3,
+  "recommendedBpm": 112,
+  "beatsPerBar": 4,
+  "steps": [
+    { "type": "note", "note": "D", "octave": 4, "string": 1, "fret": 3, "finger": "3", "beats": 1 },
+    { "type": "note", "note": "D", "octave": 4, "string": 1, "fret": 3, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "C", "octave": 4, "string": 1, "fret": 1, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "D", "octave": 4, "string": 1, "fret": 3, "finger": "3", "beats": 1 },
+    { "type": "note", "note": "F", "octave": 4, "string": 0, "fret": 1, "finger": "1", "beats": 0.5 },
+    { "type": "note", "note": "E", "octave": 4, "string": 0, "fret": 0, "finger": "", "beats": 0.5 },
+    { "type": "note", "note": "D#", "octave": 4, "string": 1, "fret": 4, "finger": "4", "beats": 0.5 },
+    { "type": "note", "note": "D", "octave": 4, "string": 1, "fret": 3, "finger": "3", "beats": 0.5 },
+    { "type": "note", "note": "C", "octave": 4, "string": 1, "fret": 1, "finger": "1", "beats": 1 },
+    { "type": "note", "note": "D", "octave": 4, "string": 1, "fret": 3, "finger": "3", "beats": 2 }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "knockin-heavens-door",
+  "name": "Knockin' on Heaven's Door - Verse",
+  "difficulty": "beginner",
+  "category": "rock",
+  "order": 1,
+  "recommendedBpm": 70,
+  "beatsPerBar": 4,
+  "steps": [
+    {
+      "type": "chord",
+      "chord": "G",
+      "beats": 2
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 2
+    },
+    {
+      "type": "chord",
+      "chord": "Am",
+      "beats": 4
+    },
+    {
+      "type": "chord",
+      "chord": "G",
+      "beats": 2
+    },
+    {
+      "type": "chord",
+      "chord": "D",
+      "beats": 2
+    },
+    {
+      "type": "chord",
+      "chord": "C",
+      "beats": 4
+    }
+  ]
+}
