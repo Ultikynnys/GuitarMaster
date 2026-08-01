@@ -130,7 +130,13 @@ export function playSample(
   }
 
   const sampleFreq = midiToFreq(best.sampleMidi);
-  const normalizedVolume = volume * best.entry.normGain;
+  // Frequency compensation: the ear is less sensitive to low frequencies,
+  // so boost notes below G3 and slightly cut above E5. Combined with the
+  // RMS normalization and duration boost, this keeps every note perceptually
+  // even regardless of pitch or length.
+  const freqComp = Math.min(1.25, Math.max(0.8,
+    1.0 + Math.max(0, (55 - midiRounded) * 0.012) - Math.max(0, (midiRounded - 76) * 0.008)));
+  const normalizedVolume = volume * best.entry.normGain * freqComp;
   let playbackRate = frequency / sampleFreq;
   if (!Number.isFinite(playbackRate) || playbackRate <= 0) playbackRate = 1;
 
@@ -172,8 +178,13 @@ export function playSample(
   compressor.attack.setValueAtTime(0.004, startTime);
   compressor.release.setValueAtTime(0.12, startTime);
 
+  // Sustain + release envelope instead of full-duration decay.
+  // Full-duration decay starves short notes: a 125ms note ramps down
+  // from 8ms onward and barely touches full volume.
+  const release = Math.min(0.05, duration * 0.3);
   gain.gain.setValueAtTime(attack > 0 ? 0.0001 : normalizedVolume, startTime);
   if (attack > 0) gain.gain.linearRampToValueAtTime(normalizedVolume, startTime + attack);
+  gain.gain.setValueAtTime(normalizedVolume, startTime + duration - release);
   gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
   source.connect(lowpass);

@@ -293,8 +293,14 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
         retrigger = true;
       }
     }
+    // Duration loudness compensation: sqrt curve so short notes get a
+    // modest boost and long notes get attenuated. Reference is 0.5s
+    // (one eighth note at 120 BPM). Capped at 2.5× to avoid clipping.
+    const durationBoost = Math.min(2.5, Math.sqrt(0.5 / Math.max(0.04, duration)));
+    const compensatedVolume = volume * durationBoost;
+
     // Zero attack on retrigger — the string is already in motion, no ramp needed.
-    const source = playSample(frequency, startTime, volume, duration, context, samples, autoplaySources.current, retrigger ? 0 : undefined);
+    const source = playSample(frequency, startTime, compensatedVolume, duration, context, samples, autoplaySources.current, retrigger ? 0 : undefined);
     if (source && stringIndex !== undefined) {
       activeStringSource.current.set(stringIndex, source);
       source.addEventListener("ended", () => {
