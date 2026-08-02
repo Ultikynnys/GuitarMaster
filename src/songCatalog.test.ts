@@ -13,19 +13,19 @@ async function loadSongs() {
 describe("song catalog", () => {
   let songs: ReturnType<typeof parseSong>[] = [];
 
-  test("contains exactly 31 valid, uniquely ordered songs", async () => {
+  test("contains exactly 32 valid, uniquely ordered songs", async () => {
     const { files, documents } = await loadSongs();
     const catalog = buildCatalog(documents);
     songs = catalog.flatMap((level) => level.categories.flatMap((category) => category.progressions));
-    expect(files).toHaveLength(31);
-    expect(songs).toHaveLength(31);
-    expect(new Set(songs.map((song) => song.id)).size).toBe(31);
+    expect(files).toHaveLength(32);
+    expect(songs).toHaveLength(32);
+    expect(new Set(songs.map((song) => song.id)).size).toBe(32);
     expect(catalog.map((level) => [level.id, level.categories.flatMap((category) => category.progressions).map((song) => song.id)])).toEqual([
       ["beginner", ["knockin-heavens-door", "zombie", "smoke-on-the-water", "stairway-to-heaven", "super-star", "zeldas-lullaby", "final-fantasy-victory-fanfare"]],
       ["rhythm-player", ["about-a-girl", "seven-nation-army", "sunshine-of-your-love", "iron-man", "tetris-theme", "lost-woods"]],
       ["band-ready", ["bad-moon-rising", "sweet-home-alabama", "californication", "day-tripper", "enter-sandman", "mario-ground-full"]],
       ["headliner", ["back-in-black", "hotel-california", "house-rising-sun", "crazy-train", "song-of-storms", "megalovania"]],
-      ["rock-star", ["thunderstruck", "dont-fear-reaper", "sweet-child-o-mine", "at-dooms-gate", "gerudo-valley", "halo-theme"]],
+      ["rock-star", ["thunderstruck", "dont-fear-reaper", "sweet-child-o-mine", "at-dooms-gate", "gerudo-valley", "halo-theme", "at-hells-gate"]],
     ]);
     for (const level of catalog) {
       for (const category of level.categories) {
@@ -46,7 +46,7 @@ describe("song catalog", () => {
       "about-a-girl": 2, "seven-nation-army": 2, "sunshine-of-your-love": 2, "iron-man": 4, "tetris-theme": 4, "lost-woods": 4,
       "bad-moon-rising": 4, "sweet-home-alabama": 2, californication: 4, "day-tripper": 2, "mario-ground-full": 3, megalovania: 4,
       "back-in-black": 4, "hotel-california": 8, "enter-sandman": 2, "house-rising-sun": 4, "crazy-train": 2, "song-of-storms": 8,
-      thunderstruck: 2, "dont-fear-reaper": 2, "sweet-child-o-mine": 4, "at-dooms-gate": 32, "gerudo-valley": 4, "halo-theme": 33,
+      thunderstruck: 2, "dont-fear-reaper": 2, "sweet-child-o-mine": 4, "at-dooms-gate": 32, "at-hells-gate": 32, "gerudo-valley": 4, "halo-theme": 33,
     };
     expect(Object.fromEntries(songs.map((song) => [song.id, Math.round(songBeats(song.id) / song.beatsPerBar)]))).toEqual(expectedBars);
 
