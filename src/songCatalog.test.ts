@@ -23,8 +23,8 @@ describe("song catalog", () => {
     expect(catalog.map((level) => [level.id, level.categories.flatMap((category) => category.progressions).map((song) => song.id)])).toEqual([
       ["beginner", ["knockin-heavens-door", "zombie", "smoke-on-the-water", "mario-ground-simple", "zeldas-lullaby", "final-fantasy-victory-fanfare"]],
       ["rhythm-player", ["about-a-girl", "seven-nation-army", "sunshine-of-your-love", "iron-man", "tetris-theme", "lost-woods"]],
-      ["band-ready", ["bad-moon-rising", "sweet-home-alabama", "californication", "day-tripper", "mario-ground-full", "megalovania"]],
-      ["headliner", ["back-in-black", "hotel-california", "enter-sandman", "house-rising-sun", "crazy-train", "song-of-storms"]],
+      ["band-ready", ["bad-moon-rising", "sweet-home-alabama", "californication", "day-tripper", "enter-sandman", "mario-ground-full"]],
+      ["headliner", ["back-in-black", "hotel-california", "house-rising-sun", "crazy-train", "song-of-storms", "megalovania"]],
       ["rock-star", ["thunderstruck", "dont-fear-reaper", "sweet-child-o-mine", "at-dooms-gate", "gerudo-valley", "halo-theme"]],
     ]);
     for (const level of catalog) {

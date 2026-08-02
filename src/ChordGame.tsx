@@ -33,9 +33,12 @@ const NOTE_OFFSETS: Record<string, number> = { C: 0, "C#": 1, D: 2, "D#": 3, E: 
 const FRET_COUNT = 24;
 const FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
 
-function stepLabel(step: ProgressionStep): string {
-  if (step.type === "chord") return step.chord + (step.muted ? " (muted)" : "");
-  return `${step.note} ${step.octave}` + (step.muted ? " (muted)" : "");
+function stepLabel(step: ProgressionStep, compact = false): string {
+  // The full " (muted)" suffix only fits the large current-step label; the
+  // sequence strip cards are narrow, so they get the compact " (m)" form.
+  const mutedSuffix = step.muted ? (compact ? " (m)" : " (muted)") : "";
+  if (step.type === "chord") return step.chord + mutedSuffix;
+  return `${step.note} ${step.octave}` + mutedSuffix;
 }
 
 function stepBeats(step: ProgressionStep): number {
@@ -67,7 +70,7 @@ function shapeForStep(step: ProgressionStep): ChordShape {
   };
 }
 
-function ChordTab({ chord, nextChord, showArrows, showGhosts }: { chord: ChordShape; nextChord: ChordShape; showArrows: boolean; showGhosts: boolean }) {
+function ChordTab({ chord, nextChord, showArrows, showGhosts, muted }: { chord: ChordShape; nextChord: ChordShape; showArrows: boolean; showGhosts: boolean; muted?: boolean }) {
   const diagramFrets = [...chord.frets].reverse();
   const diagramFingers = [...chord.fingerNumbers].reverse();
   const nextDiagramFrets = [...nextChord.frets].reverse();
@@ -89,11 +92,11 @@ function ChordTab({ chord, nextChord, showArrows, showGhosts }: { chord: ChordSh
   return (
     <div className="tab-card">
       <div className="tab-heading">
-        <strong>{chord.name}</strong>
+        <strong>{chord.name}{muted ? " (muted)" : ""}</strong>
       </div>
       <div className="chord-diagram" aria-label={`${chord.name} chord diagram`}>
         <div className="string-status">
-          {diagramFrets.map((fret, index) => <span key={DIAGRAM_STRING_NAMES[index]}>{fret === "0" ? "o" : fret === "x" ? "x" : ""}</span>)}
+          {diagramFrets.map((fret, index) => <span key={DIAGRAM_STRING_NAMES[index]}>{muted ? "x" : fret === "0" ? "o" : fret === "x" ? "x" : ""}</span>)}
         </div>
         <div className="fret-grid">
           {Array.from({ length: FRET_COUNT * 6 }, (_, index) => {
@@ -619,17 +622,20 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
           </div>
 
           <div className="sequence" aria-label="Progression sequence">
-            {progression.steps.map((step, index) => (
-              <div
-                key={`${stepLabel(step)}-${index}`}
-                className={`${!autoplaying && index < currentIndex ? "passed" : !autoplaying && index === currentIndex ? "current" : ""} ${index === autoplayIndex ? "previewing" : ""}`}
-                style={{ "--duration-hue": durationHue(stepBeats(step)) } as CSSProperties}
-              >
-                <span>{index < currentIndex ? "OK" : String(index + 1).padStart(2, "0")}</span>
-                <strong className={stepLabel(step).length > 4 ? "label-long" : stepLabel(step).length > 2 ? "label-medium" : ""}>{stepLabel(step)}</strong>
-                <small>{formatBeats(stepBeats(step))}</small>
-              </div>
-            ))}
+            {progression.steps.map((step, index) => {
+              const label = stepLabel(step, true);
+              return (
+                <div
+                  key={`${label}-${index}`}
+                  className={`${!autoplaying && index < currentIndex ? "passed" : !autoplaying && index === currentIndex ? "current" : ""} ${index === autoplayIndex ? "previewing" : ""}`}
+                  style={{ "--duration-hue": durationHue(stepBeats(step)) } as CSSProperties}
+                >
+                  <span>{index < currentIndex ? "OK" : String(index + 1).padStart(2, "0")}</span>
+                  <strong className={label.length > 5 ? "label-xl" : label.length > 4 ? "label-long" : label.length > 2 ? "label-medium" : ""}>{label}</strong>
+                  <small>{formatBeats(stepBeats(step))}</small>
+                </div>
+              );
+            })}
           </div>
 
           <div className={`game-feedback ${!currentIsMute && signalTooLow ? "low-signal" : currentMatches ? "matching" : ""}`}>
@@ -690,10 +696,10 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
 
         <div className="current-chord">
           <div className="next-label">{autoplaying ? "AUTOPLAY" : visualIsMute ? "MUTE" : `PLAY THIS ${visualIsChord ? "CHORD" : "NOTE"}`}<span>{visualIndex + 1} / {progression.steps.length}</span></div>
-          <div className={`game-chord-name ${visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
+          <div className={`game-chord-name ${visualLabel.length > 8 ? "extra-long-label" : visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
         </div>
         <div className="tab-panel">
-          <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} showArrows={showArrows} showGhosts={showGhosts} />
+          <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} showArrows={showArrows} showGhosts={showGhosts} muted={visualStep.muted} />
         </div>
       </div>
     </section>

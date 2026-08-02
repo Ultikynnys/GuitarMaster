@@ -1,9 +1,9 @@
 {
   "id": "enter-sandman",
   "name": "Enter Sandman - Clean Intro Riff",
-  "difficulty": "headliner",
+  "difficulty": "band-ready",
   "category": "rock",
-  "order": 3,
+  "order": 5,
   "recommendedBpm": 123,
   "beatsPerBar": 4,
   "steps": [

@@ -4,3 +4,9 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+.reasonix/
+tools/SngCli.exe
+tools/sng_in/
+tools/sng_out/
+tools/**/*.sng
+tools/__pycache__/
