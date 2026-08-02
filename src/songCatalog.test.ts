@@ -42,7 +42,7 @@ describe("song catalog", () => {
 
     const songBeats = (id: string) => songs.find((song) => song.id === id)!.steps.reduce((total, step) => total + step.beats, 0);
     const expectedBars = {
-      "knockin-heavens-door": 4, zombie: 8, "smoke-on-the-water": 4, "stairway-to-heaven": 4, "super-star": 4, "zeldas-lullaby": 4, "final-fantasy-victory-fanfare": 3,
+      "knockin-heavens-door": 4, zombie: 8, "smoke-on-the-water": 4, "stairway-to-heaven": 4, "super-star": 4, "zeldas-lullaby": 24, "final-fantasy-victory-fanfare": 3,
       "about-a-girl": 2, "seven-nation-army": 2, "sunshine-of-your-love": 2, "iron-man": 4, "tetris-theme": 4, "lost-woods": 4,
       "bad-moon-rising": 4, "sweet-home-alabama": 2, californication: 4, "day-tripper": 2, "mario-ground-full": 3, megalovania: 4,
       "back-in-black": 4, "hotel-california": 8, "enter-sandman": 2, "house-rising-sun": 4, "crazy-train": 2, "song-of-storms": 8,

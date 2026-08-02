@@ -258,6 +258,24 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     source.stop(now + duration);
   }
 
+  function playFeedback(kind: "accept" | "loop", volume: number, delay = 0) {
+    const context = feedbackAudioContext.current;
+    if (!context || volume === 0) return;
+    const freq = kind === "accept" ? 880 : 523;
+    const duration = kind === "accept" ? 0.08 : 0.15;
+    const now = context.currentTime + delay;
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(Math.max(0.0001, volume * 0.4), now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    osc.connect(gain);
+    gain.connect(context.destination);
+    osc.start(now);
+    osc.stop(now + duration);
+  }
+
   function stopMetronome() {
     if (metronomeTimer.current !== null) window.clearTimeout(metronomeTimer.current);
     metronomeTimer.current = null;
@@ -445,8 +463,8 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   useEffect(() => {
     if (mode !== "playing" || holdFrames < requiredFrames) return;
     const completedLoop = currentIndex === progression.steps.length - 1;
-    if (!currentIsMute) playClick("tick", acceptedStepVolume);
-    if (completedLoop) playClick("tock", acceptedStepVolume, 0.1);
+    if (!currentIsMute) playFeedback("accept", acceptedStepVolume);
+    if (completedLoop) playFeedback("loop", acceptedStepVolume, 0.1);
     if (!currentIsMute) setScore((value) => value + 100 + currentIndex * 25);
     setHoldFrames(0);
     needsRelease.current = true;
