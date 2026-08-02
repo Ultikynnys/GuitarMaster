@@ -131,7 +131,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.75
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.25
     },
     {
       "type": "note",
@@ -239,7 +248,25 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 1.5
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
     },
     {
       "type": "note",
@@ -248,7 +275,25 @@
       "string": 4,
       "fret": 1,
       "finger": "1",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -374,7 +419,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -491,7 +545,25 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 1.5
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
     },
     {
       "type": "note",
@@ -500,7 +572,25 @@
       "string": 4,
       "fret": 1,
       "finger": "1",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -617,7 +707,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.75
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.25
     },
     {
       "type": "note",
@@ -725,7 +824,34 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 1.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -734,7 +860,25 @@
       "string": 4,
       "fret": 1,
       "finger": "1",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -860,7 +1004,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -1094,7 +1247,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.75
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.25
     },
     {
       "type": "note",
@@ -1202,7 +1364,25 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 1.5
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
     },
     {
       "type": "note",
@@ -1211,7 +1391,25 @@
       "string": 4,
       "fret": 1,
       "finger": "1",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -1337,7 +1535,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -1544,7 +1751,16 @@
       "string": 4,
       "fret": 0,
       "finger": "",
-      "beats": 0.75
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 2,
+      "string": 4,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.25
     },
     {
       "type": "note",
@@ -1652,7 +1868,25 @@
       "string": 4,
       "fret": 0,
       "finger": "",
-      "beats": 1.5
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 2,
+      "string": 4,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 2,
+      "string": 4,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
     },
     {
       "type": "note",
@@ -1661,7 +1895,25 @@
       "string": 3,
       "fret": 1,
       "finger": "1",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "D#",
+      "octave": 3,
+      "string": 3,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "D#",
+      "octave": 3,
+      "string": 3,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -1787,7 +2039,16 @@
       "string": 4,
       "fret": 0,
       "finger": "",
-      "beats": 0.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 2,
+      "string": 4,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -2066,7 +2327,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.75
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.25
     },
     {
       "type": "note",
@@ -2174,7 +2444,25 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 1.5
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
     },
     {
       "type": "note",
@@ -2183,7 +2471,25 @@
       "string": 4,
       "fret": 1,
       "finger": "1",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -2309,7 +2615,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -2426,7 +2741,25 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 1.5
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
     },
     {
       "type": "note",
@@ -2435,7 +2768,25 @@
       "string": 4,
       "fret": 1,
       "finger": "1",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -2561,7 +2912,16 @@
       "string": 4,
       "fret": 4,
       "finger": "4",
-      "beats": 0.75
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "C#",
+      "octave": 3,
+      "string": 4,
+      "fret": 4,
+      "finger": "4",
+      "beats": 0.25
     },
     {
       "type": "note",
@@ -2669,7 +3029,25 @@
       "string": 4,
       "fret": 0,
       "finger": "",
-      "beats": 1.5
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 2,
+      "string": 4,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A",
+      "octave": 2,
+      "string": 4,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
     },
     {
       "type": "note",
@@ -2678,7 +3056,25 @@
       "string": 3,
       "fret": 3,
       "finger": "3",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "F",
+      "octave": 3,
+      "string": 3,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "F",
+      "octave": 3,
+      "string": 3,
+      "fret": 3,
+      "finger": "3",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -2804,7 +3200,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -3074,7 +3479,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.75
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.25
     },
     {
       "type": "note",
@@ -3182,7 +3596,25 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 1.5
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
     },
     {
       "type": "note",
@@ -3191,7 +3623,25 @@
       "string": 4,
       "fret": 1,
       "finger": "1",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "A#",
+      "octave": 2,
+      "string": 4,
+      "fret": 1,
+      "finger": "1",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -3317,7 +3767,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -3578,7 +4037,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.75
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.25
     },
     {
       "type": "note",
@@ -3686,7 +4154,34 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 1.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -3695,7 +4190,25 @@
       "string": 4,
       "fret": 4,
       "finger": "4",
-      "beats": 1.375
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "C#",
+      "octave": 3,
+      "string": 4,
+      "fret": 4,
+      "finger": "4",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "C#",
+      "octave": 3,
+      "string": 4,
+      "fret": 4,
+      "finger": "4",
+      "beats": 0.375
     },
     {
       "type": "note",
@@ -3821,7 +4334,16 @@
       "string": 5,
       "fret": 0,
       "finger": "",
-      "beats": 0.625
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 2,
+      "string": 5,
+      "fret": 0,
+      "finger": "",
+      "beats": 0.125
     },
     {
       "type": "note",
@@ -3929,7 +4451,43 @@
       "string": 2,
       "fret": 9,
       "finger": "4",
-      "beats": 2.125
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 4,
+      "string": 2,
+      "fret": 9,
+      "finger": "4",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 4,
+      "string": 2,
+      "fret": 9,
+      "finger": "4",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 4,
+      "string": 2,
+      "fret": 9,
+      "finger": "4",
+      "beats": 0.5
+    },
+    {
+      "type": "note",
+      "note": "E",
+      "octave": 4,
+      "string": 2,
+      "fret": 9,
+      "finger": "4",
+      "beats": 0.125
     }
   ]
 }
