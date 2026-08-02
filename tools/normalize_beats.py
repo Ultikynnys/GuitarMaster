@@ -1,48 +1,61 @@
-"""Split long notes (>0.5 beat) into repeated 0.25-0.5 beat strokes."""
+"""Cap beats >0.75 to 0.75, spread overflow across last 8 notes proportionally."""
 import json, sys
 
 path = sys.argv[1] if len(sys.argv) > 1 else "src/songs/at-hells-gate.json"
 with open(path) as f:
     song = json.load(f)
 
-old_steps = song["steps"]
-new_steps = []
-fixed = 0
+steps = song["steps"]
+overflow = 0
+capped = 0
 
-for s in old_steps:
-    dur = s["beats"]
-    if dur <= 0.5:
-        new_steps.append(s)
-    else:
-        # Split into 0.5-beat chunks, remainder as final chunk
-        while dur > 0.6:
-            chunk = min(0.5, dur)
-            chunk = round(chunk * 8) / 8
-            new_steps.append({**s, "beats": chunk})
-            dur = round(dur - chunk, 3)
-            fixed += 1
-        if dur > 0:
-            dur = max(0.125, round(dur * 8) / 8)
-            new_steps.append({**s, "beats": dur})
+for s in steps[:-1]:  # all except last
+    old = s["beats"]
+    if old > 0.75:
+        overflow += old - 0.75
+        s["beats"] = 0.75
+        capped += 1
 
-total = sum(s["beats"] for s in new_steps)
+# Also cap the last note but keep its overflow separate
+last_old = steps[-1]["beats"]
+if last_old > 0.75:
+    overflow += last_old - 0.75
+    steps[-1]["beats"] = 0.75
+    capped += 1
+
+total = sum(s["beats"] for s in steps)
 bars = round(total / 4)
 target = bars * 4
-diff = round(target - total, 3)
-if diff > 0:
-    new_steps[-1]["beats"] = round(new_steps[-1]["beats"] + diff, 3)
-    new_steps[-1]["beats"] = max(0.125, round(new_steps[-1]["beats"] * 8) / 8)
+total_shortfall = round(target - total, 3)
 
-total = sum(s["beats"] for s in new_steps)
-print(f"Split {fixed} notes, {len(old_steps)}→{len(new_steps)} steps, total: {total:.3f} beats, {total/4:.0f} bars")
+# Spread shortfall + overflow across last 8 notes proportionally
+spread_count = min(8, len(steps))
+for i in range(len(steps) - spread_count, len(steps)):
+    share = total_shortfall / spread_count
+    steps[i]["beats"] = round(steps[i]["beats"] + share, 3)
+    steps[i]["beats"] = max(0.125, round(steps[i]["beats"] * 8) / 8)
+
+total = sum(s["beats"] for s in steps)
+# Final adjustment
+diff = round(target - total, 3)
+if diff:
+    steps[-1]["beats"] = round(steps[-1]["beats"] + diff, 3)
+    steps[-1]["beats"] = max(0.125, round(steps[-1]["beats"] * 8) / 8)
+
+total = sum(s["beats"] for s in steps)
+print(f"Capped {capped} notes, total: {total:.3f} beats, {total/4:.0f} bars")
 
 # Verify
-beats = [s["beats"] for s in new_steps]
+beats = [s["beats"] for s in steps]
 bad = [b for b in beats if round(b * 8) != b * 8]
 longs = [b for b in beats if b > 0.75]
-print(f"Non-standard: {len(bad)}, >0.75 beat: {len(longs)}/{len(beats)}")
+print(f"Non-standard: {len(bad)}, >0.75: {len(longs)}/{len(beats)}")
+if longs:
+    from collections import Counter
+    for v, n in sorted(Counter(longs).items()):
+        print(f"  {v}: {n}x")
 
-song["steps"] = new_steps
+song["steps"] = steps
 with open(path, "w") as f:
     json.dump(song, f, indent=2)
     f.write("\n")
