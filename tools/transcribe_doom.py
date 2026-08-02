@@ -1,70 +1,67 @@
-"""Transcribe doom_e1m1.mid to at-hells-gate.json — no dedup, wide range."""
+"""Regenerate at-hells-gate.json — no same-pitch merging, clean 8th-note quantize."""
 import json, sys
 sys.path.insert(0, ".")
 from midi_parse import note_events, NOTE_NAMES
 
 fmt, tracks = note_events("tools/midis/doom_e1m1.mid")
 
-# Collect all notes in guitar range from all tracks
+# Pick channel with most notes in 40-65 range
+from collections import Counter
 all_notes = []
 for t in tracks:
     ppq = t['ppq']
     for start, dur, pitch, ch in t['notes']:
         if 40 <= pitch <= 65:
             all_notes.append((start / ppq, dur / ppq, pitch, ch))
-
-# Group by channel, pick channel with most notes
-from collections import Counter
 ch_counts = Counter(ch for _,_,_,ch in all_notes)
 best_ch = ch_counts.most_common(1)[0][0]
 notes = [(sb, db, p) for sb, db, p, ch in all_notes if ch == best_ch]
 notes.sort(key=lambda n: n[0])
 
-print(f"Channel {best_ch}: {len(notes)} notes, {sum(d for _,d,_ in notes):.1f} beats", file=sys.stderr)
+print(f"Channel {best_ch}: {len(notes)} raw notes", file=sys.stderr)
 
-# Truncate to ~128 beats  
-MAX_BEATS = 132
-truncated = []
+# Quantize and filter
+MAX_BEATS = 136
+quantized = []
 for sb, db, pitch in notes:
     if sb >= MAX_BEATS:
         break
     if db < 0.08:
         continue
-    if sb + db > MAX_BEATS:
-        db = MAX_BEATS - sb
-    if db < 0.08:
+    # Quantize start and duration to 16th notes
+    sb_q = round(sb * 4) / 4
+    db_q = max(0.125, round(db * 8) / 8)
+    if sb_q + db_q > MAX_BEATS:
+        db_q = MAX_BEATS - sb_q
+    if db_q < 0.1:
         continue
-    db = max(0.125, round(db * 8) / 8)  # quantize to 8th notes
-    truncated.append((sb, db, pitch))
+    quantized.append((sb_q, db_q, pitch))
 
-# Merge adjacent same-pitch
-merged = []
-for sb, db, pitch in truncated:
-    if merged and merged[-1][2] == pitch and abs(merged[-1][0] + merged[-1][1] - sb) < 0.02:
-        merged[-1] = (merged[-1][0], sb + db - merged[-1][0], pitch)
-    else:
-        merged.append((sb, db, pitch))
+# Remove overlapping (keep highest pitch when notes start at same quantized time)
+deduped = []
+i = 0
+while i < len(quantized):
+    sb, db, pitch = quantized[i]
+    # Collect all notes at this quantized start
+    group = [(sb, db, pitch)]
+    j = i + 1
+    while j < len(quantized) and abs(quantized[j][0] - sb) < 0.01:
+        group.append(quantized[j])
+        j += 1
+    best = max(group, key=lambda x: x[2])
+    deduped.append(best)
+    i = j
 
-print(f"Merged: {len(merged)} notes, {sum(d for _,d,_ in merged):.1f} beats", file=sys.stderr)
+# NO same-pitch merging — each note stays separate
 
-# Re-truncate after merge
-merged2 = []
-for sb, db, pitch in merged:
-    if sb >= MAX_BEATS:
-        break
-    if sb + db > MAX_BEATS:
-        db = MAX_BEATS - sb
-    if db < 0.08:
-        continue
-    merged2.append((sb, db, pitch))
-merged = merged2
+print(f"Deduped: {len(deduped)} notes, {sum(d for _,d,_ in deduped):.1f} beats", file=sys.stderr)
 
 def guitar_pos(pitch):
-    strings = [(5, 40, "E", 2), (4, 45, "A", 2), (3, 50, "D", 3), (2, 55, "G", 3), (1, 59, "B", 3)]
+    strings = [(5, 40, "E", 2), (4, 45, "A", 2), (3, 50, "D", 3), (2, 55, "G", 3)]
     best_pos, best_fret = None, 99
     for s, base, name, octv in strings:
         fret = pitch - base
-        if 0 <= fret <= 5 and fret < best_fret:
+        if 0 <= fret <= 6 and fret < best_fret:
             best_fret, best_pos = fret, (s, fret)
     if best_pos is None:
         for s, base, name, octv in strings:
@@ -74,8 +71,7 @@ def guitar_pos(pitch):
     return best_pos
 
 steps = []
-for start, dur, pitch in merged:
-    dur = round(dur * 8) / 8  # quantize to 8th note, allow 0.125
+for start, dur, pitch in deduped:
     pos = guitar_pos(pitch)
     if not pos:
         continue
@@ -86,15 +82,19 @@ for start, dur, pitch in merged:
     steps.append({
         "type": "note", "note": note_name, "octave": note_oct,
         "string": string, "fret": fret, "finger": finger,
-        "beats": round(dur, 2)
+        "beats": dur
     })
 
-total_beats = sum(s["beats"] for s in steps)
-bars_needed = int(total_beats / 4) + (1 if total_beats % 4 > 0.01 else 0)
-target = bars_needed * 4
-pad = round(target - total_beats, 2)
-if pad > 0:
-    steps.append({"type": "note", "note": "E", "octave": 2, "string": 5, "fret": 0, "finger": "", "beats": pad})
+total = sum(s["beats"] for s in steps)
+bars = round(total / 4)
+target = bars * 4
+diff = round(target - total, 3)
+if diff != 0:
+    steps[-1]["beats"] = round(steps[-1]["beats"] + diff, 3)
+    steps[-1]["beats"] = max(0.125, round(steps[-1]["beats"] * 8) / 8)
+total = sum(s["beats"] for s in steps)
+
+print(f"Steps: {len(steps)}, beats: {total:.3f}, bars: {total/4:.0f}", file=sys.stderr)
 
 song = {
     "id": "at-hells-gate",
@@ -107,10 +107,13 @@ song = {
     "steps": steps
 }
 
-total_beats = sum(s["beats"] for s in steps)
-print(f"Steps: {len(steps)}, beats: {total_beats:.2f}, bars: {total_beats/4:.0f}", file=sys.stderr)
-
 with open("src/songs/at-hells-gate.json", "w") as f:
     json.dump(song, f, indent=2)
     f.write("\n")
-print("Written", file=sys.stderr)
+
+# Verify values
+beats = [s['beats'] for s in steps]
+bad = [b for b in beats if round(b * 8) != b * 8]
+print(f"Non-standard beats: {len(bad)}", file=sys.stderr)
+if bad:
+    print(f"Samples: {sorted(set(bad))[:15]}", file=sys.stderr)
