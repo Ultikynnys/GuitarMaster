@@ -21,7 +21,7 @@ describe("song catalog", () => {
     expect(songs).toHaveLength(31);
     expect(new Set(songs.map((song) => song.id)).size).toBe(31);
     expect(catalog.map((level) => [level.id, level.categories.flatMap((category) => category.progressions).map((song) => song.id)])).toEqual([
-      ["beginner", ["knockin-heavens-door", "zombie", "smoke-on-the-water", "stairway-to-heaven", "mario-ground-simple", "zeldas-lullaby", "final-fantasy-victory-fanfare"]],
+      ["beginner", ["knockin-heavens-door", "zombie", "smoke-on-the-water", "stairway-to-heaven", "super-star", "zeldas-lullaby", "final-fantasy-victory-fanfare"]],
       ["rhythm-player", ["about-a-girl", "seven-nation-army", "sunshine-of-your-love", "iron-man", "tetris-theme", "lost-woods"]],
       ["band-ready", ["bad-moon-rising", "sweet-home-alabama", "californication", "day-tripper", "enter-sandman", "mario-ground-full"]],
       ["headliner", ["back-in-black", "hotel-california", "house-rising-sun", "crazy-train", "song-of-storms", "megalovania"]],
@@ -42,7 +42,7 @@ describe("song catalog", () => {
 
     const songBeats = (id: string) => songs.find((song) => song.id === id)!.steps.reduce((total, step) => total + step.beats, 0);
     const expectedBars = {
-      "knockin-heavens-door": 4, zombie: 8, "smoke-on-the-water": 4, "stairway-to-heaven": 4, "mario-ground-simple": 3, "zeldas-lullaby": 4, "final-fantasy-victory-fanfare": 3,
+      "knockin-heavens-door": 4, zombie: 8, "smoke-on-the-water": 4, "stairway-to-heaven": 4, "super-star": 4, "zeldas-lullaby": 4, "final-fantasy-victory-fanfare": 3,
       "about-a-girl": 2, "seven-nation-army": 2, "sunshine-of-your-love": 2, "iron-man": 4, "tetris-theme": 4, "lost-woods": 4,
       "bad-moon-rising": 4, "sweet-home-alabama": 2, californication: 4, "day-tripper": 2, "mario-ground-full": 3, megalovania: 4,
       "back-in-black": 4, "hotel-california": 8, "enter-sandman": 2, "house-rising-sun": 4, "crazy-train": 2, "song-of-storms": 8,

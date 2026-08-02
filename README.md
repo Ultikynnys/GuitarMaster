@@ -84,6 +84,34 @@ Note string indexes run from highest to lowest pitch: `0` = high e, `1` = B, `2`
 3. Define `recommendedBpm`, required `beatsPerBar`, and at least one valid note, chord, or mute step. Check each bar's beat total.
 4. Run the validation commands below. Catalog tests verify parsing, IDs, ordering, meter, and expected song inventory.
 
+## Extracting Songs From MIDI
+
+The `tools/` directory is a Python 3 toolkit (stdlib only, no third-party packages) for pulling melodies out of MIDI files — the raw material for `src/songs/` progressions. Save or download a MIDI into `tools/midis/`, inspect it, extract the melody, then convert the output into a song JSON.
+
+- **`tools/midi_parse.py`** — Minimal Standard MIDI File parser. `--summary` prints one line per track (name, channel, note count, pitch range); `--notes` dumps every note event as `start_beat, dur_beats, midi_pitch, channel`; `--melody` collapses each track into a monophonic note + beat-duration list.
+- **`tools/midi_melody.py`** — The melody extractor, used for extracting songs that can later be converted to progressions. At each quantized tick it picks the highest sounding note within a pitch range and prints it as note name + beat durations, ready for transcription. Arguments: `<file.mid> [minPitch] [maxPitch] [beatGrid]`.
+- **`tools/bitmidi_dl.py`** — Downloads MIDIs from bitmidi.com into `tools/midis/`. Edit its `jobs` list with `(slug, filename)` pairs or call `dl(slug, name)` directly.
+- **`tools/vgmusic.py`** — Lists `.mid` links in a vgmusic.com directory and downloads matches into `tools/midis/`.
+
+Typical workflow:
+
+1. Save a MIDI into `tools/midis/` (or fetch one with `bitmidi_dl.py` / `vgmusic.py`).
+2. Find the melody track and its pitch range:
+
+   ```powershell
+   python tools/midi_parse.py tools/midis/song.mid --summary
+   ```
+
+3. Extract the top-line melody, quantized to a beat grid (`0.5` = eighth notes, `0.25` = sixteenths):
+
+   ```powershell
+   python tools/midi_melody.py tools/midis/song.mid 48 84 0.5
+   ```
+
+4. Convert the note + beat runs into `src/songs/<song>.json`: transpose or re-octave notes into a comfortable guitar range, choose first-position string/fret fingerings, and clean up the rhythm so each bar totals `beatsPerBar`. The catalog validator enforces that every written note and octave matches its standard-tuned string and fret.
+
+Extractor output is raw material, not a finished progression — MIDI octave, channel layout, and sloppy timing still need musical judgment before a song JSON passes validation (see "Adding A Song" above).
+
 ## Validation And Build
 
 ```powershell

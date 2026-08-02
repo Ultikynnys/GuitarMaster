@@ -163,6 +163,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const autoplayTimer = useRef<number | null>(null);
   const autoplayGeneration = useRef(0);
   const autoplaySources = useRef(new Set<AudioBufferSourceNode>());
+  const needsRelease = useRef(false);
   const activeStringSource = useRef(new Map<number, AudioBufferSourceNode>());
   const samplesRef = useRef<SampleMap | null>(null);
   const metronomeTimer = useRef<number | null>(null);
@@ -420,6 +421,11 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
       setHoldFrames(0);
       return;
     }
+    if (needsRelease.current) {
+      setHoldFrames(0);
+      if (!currentMatches) needsRelease.current = false;
+      return;
+    }
     if (currentMatches) {
       setHoldFrames((value) => Math.min(requiredFrames, value + 1));
     } else {
@@ -443,6 +449,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     if (completedLoop) playClick("tock", acceptedStepVolume, 0.1);
     if (!currentIsMute) setScore((value) => value + 100 + currentIndex * 25);
     setHoldFrames(0);
+    needsRelease.current = true;
     if (completedLoop) {
       setLoops((value) => value + 1);
       setCurrentIndex(0);
@@ -461,6 +468,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     setLoops(0);
     setElapsed(0);
     startedAt.current = Date.now();
+    needsRelease.current = false;
     setMode("playing");
   }
 
