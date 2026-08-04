@@ -5,7 +5,7 @@ export function getVersion(): string {
     encoding: "utf8",
   });
   const count = result.status === 0 ? Number.parseInt(result.stdout.trim(), 10) : 0;
-  return `0.1.${Number.isFinite(count) ? count : 0}`;
+  return `${Number.isFinite(count) ? count : 0}`;
 }
 
 if (import.meta.main) {
