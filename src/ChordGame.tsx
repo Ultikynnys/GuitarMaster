@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { ChordResult, PitchResult } from "./audioDetection";
 import { chordPluckTiming, stepDurationSeconds } from "./playbackTiming";
 import { loadSamples, playSample, type SampleMap } from "./sampleEngine";
-import { buildCatalog, type ProgressionStep } from "./songCatalog";
+import { buildCatalog, stepLabel, type ProgressionStep } from "./songCatalog";
 
 type ChordShape = {
   name: string;
@@ -32,14 +32,6 @@ const OPEN_STRING_FREQUENCIES = [329.63, 246.94, 196, 146.83, 110, 82.41];
 const NOTE_OFFSETS: Record<string, number> = { C: 0, "C#": 1, D: 2, "D#": 3, E: 4, F: 5, "F#": 6, G: 7, "G#": 8, A: 9, "A#": 10, B: 11 };
 const FRET_COUNT = 24;
 const FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
-
-function stepLabel(step: ProgressionStep, compact = false): string {
-  // The full " (muted)" suffix only fits the large current-step label; the
-  // sequence strip cards are narrow, so they get the compact " (m)" form.
-  const mutedSuffix = step.muted ? (compact ? " (m)" : " (muted)") : "";
-  if (step.type === "chord") return step.chord + mutedSuffix;
-  return `${step.note} ${step.octave}` + mutedSuffix;
-}
 
 function stepBeats(step: ProgressionStep): number {
   return step.beats;
@@ -92,7 +84,7 @@ function ChordTab({ chord, nextChord, showArrows, showGhosts, muted }: { chord: 
   return (
     <div className="tab-card">
       <div className="tab-heading">
-        <strong>{chord.name}{muted ? " (muted)" : ""}</strong>
+        <strong>{muted ? "Mute" : chord.name}</strong>
       </div>
       <div className="chord-diagram" aria-label={`${chord.name} chord diagram`}>
         <div className="string-status">
@@ -659,7 +651,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
 
           <div className="sequence" aria-label="Progression sequence">
             {progression.steps.map((step, index) => {
-              const label = stepLabel(step, true);
+              const label = stepLabel(step);
               return (
                 <div
                   key={`${label}-${index}`}

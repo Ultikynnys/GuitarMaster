@@ -29,6 +29,16 @@ export type Progression = {
 export type MusicCategory = { id: CategoryId; name: string; progressions: Progression[] };
 export type DifficultyLevel = { id: DifficultyId; name: string; categories: MusicCategory[] };
 
+// Label for a step in the game UI. Muted steps are timed mutes — the player
+// damps the strings, no chord/note rings — so they are labelled "Mute" and
+// NEVER "Em (muted)": combining a chord name with a mute is unplayable and
+// confusing.
+export function stepLabel(step: ProgressionStep): string {
+  if (step.muted) return "Mute";
+  if (step.type === "chord") return step.chord;
+  return `${step.note} ${step.octave}`;
+}
+
 const NOTE_NAMES = new Set(["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
 const NOTE_OFFSETS: Record<string, number> = { C: 0, "C#": 1, D: 2, "D#": 3, E: 4, F: 5, "F#": 6, G: 7, "G#": 8, A: 9, "A#": 10, B: 11 };
 const OPEN_STRING_MIDI = [64, 59, 55, 50, 45, 40];

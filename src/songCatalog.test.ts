@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readdir } from "node:fs/promises";
-import { buildCatalog, parseSong } from "./songCatalog";
+import { buildCatalog, parseSong, stepLabel } from "./songCatalog";
 
 const songsDirectory = new URL("./songs/", import.meta.url);
 
@@ -103,5 +103,21 @@ describe("song catalog", () => {
     // parseSong rejects {type: "mute"} and the ProgressionStep union
     // only allows "chord" | "note". buildCatalog() already validates
     // every song; if it doesn't throw, no mute-type steps exist.
+  });
+
+  test("stepLabel never combines a chord with a mute suffix", () => {
+    expect(stepLabel({ type: "chord", chord: "Em", beats: 0.5, muted: true })).toBe("Mute");
+    expect(stepLabel({ type: "chord", chord: "Em", beats: 0.5 })).toBe("Em");
+    expect(stepLabel({ type: "note", note: "E", octave: 2, string: 5, fret: 0, finger: "", beats: 1, muted: true })).toBe("Mute");
+    expect(stepLabel({ type: "note", note: "E", octave: 2, string: 5, fret: 0, finger: "", beats: 1 })).toBe("E 2");
+  });
+
+  test("no catalog step is ever labelled as a muted chord or note", async () => {
+    const { files, documents } = await loadSongs();
+    const catalog = buildCatalog(documents);
+    const labels = catalog
+      .flatMap((level) => level.categories.flatMap((category) => category.progressions))
+      .flatMap((song) => song.steps.map(stepLabel));
+    expect(labels.every((label) => !label.includes("("))).toBe(true);
   });
 });
