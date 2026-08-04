@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { detectChord, detectPitch, type ChordResult, type PitchResult } from "./audioDetection";
+import { createAttackState, detectAttack, detectChord, detectPitch, type ChordResult, type PitchResult } from "./audioDetection";
 
 export type InputStatus = "idle" | "requesting" | "listening" | "error";
 
@@ -17,8 +17,7 @@ export function useAudioInput() {
   const [attackCount, setAttackCount] = useState(0);
   const cleanupRef = useRef<() => void>(() => undefined);
   const outputGainRef = useRef<GainNode | null>(null);
-  const attackAverageRef = useRef(0);
-  const attackCooldownRef = useRef(0);
+  const attackStateRef = useRef(createAttackState());
 
   async function refreshDevices() {
     if (!navigator.mediaDevices?.enumerateDevices) return;
@@ -89,6 +88,7 @@ export function useAudioInput() {
 
       const timeData = new Float32Array(analyser.fftSize);
       const frequencyData = new Float32Array(analyser.frequencyBinCount);
+      const previousFrequencyData = new Float32Array(analyser.frequencyBinCount);
       let animationId = 0;
       let lastAnalysis = 0;
 
@@ -102,25 +102,29 @@ export function useAudioInput() {
         const normalizedLevel = Math.min(1, Math.sqrt(sum / timeData.length) * 5);
         setLevel(normalizedLevel);
 
-        // Attack / onset detection: track a fast-decay EMA of the input level.
-        // When the current level spikes well above the recent average, flag a new
-        // strum so ChordGame can clear its needsRelease gate and accept the same
-        // chord again without requiring the player to mute between strums.
-        attackAverageRef.current = attackAverageRef.current * 0.9 + normalizedLevel * 0.1;
-        if (attackCooldownRef.current > 0) {
-          attackCooldownRef.current--;
-        } else if (normalizedLevel > attackAverageRef.current * 1.8 && normalizedLevel > 0.06) {
-          setAttackCount((c) => c + 1);
-          attackCooldownRef.current = 2; // ~180 ms minimum between attacks
-          attackAverageRef.current = normalizedLevel; // reset EMA to prevent double-fire
+        // Attack / onset detection: flag a fresh strum so ChordGame can clear
+        // its needsRelease gate and accept the same chord again without
+        // requiring the player to mute between strums. A strum is a fast level
+        // rise on top of the ringing chord, or a broadband spectral transient
+        // (which also fires when the input level is saturated and cannot rise).
+        analyser.getFloatFrequencyData(frequencyData);
+        let flux = 0;
+        for (let bin = 0; bin < frequencyData.length; bin++) {
+          const delta = frequencyData[bin] - previousFrequencyData[bin];
+          if (Number.isFinite(delta) && delta > 0) flux += delta;
         }
+        flux /= frequencyData.length;
+        previousFrequencyData.set(frequencyData);
+
+        const { attack, state } = detectAttack(normalizedLevel, flux, attackStateRef.current);
+        attackStateRef.current = state;
+        if (attack) setAttackCount((c) => c + 1);
 
         setPitch(detectPitch(timeData, audioContext.sampleRate));
 
         if (normalizedLevel < 0.04) {
           setChord(null);
         } else {
-          analyser.getFloatFrequencyData(frequencyData);
           setChord(detectChord(frequencyData, audioContext.sampleRate, analyser.fftSize));
         }
       };

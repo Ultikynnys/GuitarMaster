@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { detectChord, detectPitch, frequencyToPitch } from "./audioDetection";
+import { createAttackState, detectAttack, detectChord, detectPitch, frequencyToPitch } from "./audioDetection";
 
 // Build a dBFS FFT spectrum the way AnalyserNode.getFloatFrequencyData
 // reports it: one bin per (fftSize / 2), partials smeared over ~3 bins
@@ -102,5 +102,63 @@ describe("detectChord", () => {
 
   test("returns null on silence", () => {
     expect(detectChord(new Float32Array(8192).fill(-120), 48_000, 16_384)).toBeNull();
+  });
+});
+
+describe("detectAttack", () => {
+  test("does not fire on a slowly decaying ring", () => {
+    let state = createAttackState();
+    state = detectAttack(0, 0, state).state; // warmup
+    state = detectAttack(0, 0, state).state; // warmup
+    state = detectAttack(0.4, 0.01, state).state; // first sound, may fire
+    let fired = 0;
+    for (const level of [0.39, 0.37, 0.34, 0.3, 0.26, 0.22]) {
+      const result = detectAttack(level, 0.01, state);
+      state = result.state;
+      if (result.attack) fired++;
+    }
+    expect(fired).toBe(0);
+  });
+
+  test("fires on a strum over a ringing chord", () => {
+    let state = createAttackState();
+    for (const level of [0.3, 0.28, 0.26]) {
+      state = detectAttack(level, 0.01, state).state;
+    }
+    expect(detectAttack(0.4, 0.05, state).attack).toBe(true);
+  });
+
+  test("fires on a spectral transient even when the level is saturated", () => {
+    let state = createAttackState();
+    for (let frame = 0; frame < 3; frame++) {
+      state = detectAttack(1, 0.01, state).state;
+    }
+    expect(detectAttack(1, 0.6, state).attack).toBe(true);
+  });
+
+  test("suppresses immediate refires but accepts a later strum", () => {
+    let state = createAttackState();
+    state = detectAttack(0.2, 0.01, state).state;
+    state = detectAttack(0.2, 0.01, state).state;
+    const first = detectAttack(0.5, 0.3, state);
+    expect(first.attack).toBe(true);
+    state = first.state;
+    state = detectAttack(0.5, 0.2, state).state;
+    expect(state.cooldown).toBe(1);
+    state = detectAttack(0.49, 0.05, state).state;
+    expect(state.cooldown).toBe(0);
+    // Ring decayed while the cooldown elapsed; the next strum fires again.
+    expect(detectAttack(0.6, 0.4, state).attack).toBe(true);
+  });
+
+  test("does not fire on silence", () => {
+    let state = createAttackState();
+    let fired = 0;
+    for (let frame = 0; frame < 6; frame++) {
+      const result = detectAttack(0, 0, state);
+      state = result.state;
+      if (result.attack) fired++;
+    }
+    expect(fired).toBe(0);
   });
 });

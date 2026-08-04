@@ -678,7 +678,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
             {mode === "playing" ? (
               <>
                 <span>{currentIsMute ? "TIMED MUTE" : signalTooLow ? "READING IGNORED" : heardLabel ? `HEARD ${heardLabel}` : "LISTENING..."}</span>
-                <strong>{currentIsMute ? `Mute for ${formatBeats(stepBeats(currentStep))}` : signalTooLow ? "Signal too low" : currentMatches ? "Hold it" : `Play ${currentLabel}`}</strong>
+                <strong>{currentIsMute ? `Mute for ${formatBeats(stepBeats(currentStep))}` : signalTooLow ? "Signal too low" : currentMatches ? (holdFrames > 0 ? "Hold it" : "Strum again") : `Play ${currentLabel}`}</strong>
                 <i><b style={{ width: `${(holdFrames / requiredFrames) * 100}%` }} /></i>
               </>
             ) : (

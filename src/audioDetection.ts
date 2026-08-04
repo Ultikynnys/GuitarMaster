@@ -173,3 +173,41 @@ export function detectChord(spectrum: Float32Array, sampleRate: number, fftSize:
     confidence,
   };
 }
+
+export type AttackState = {
+  /** Level of the previous frame, for rise detection. */
+  prevLevel: number;
+  /** Long-term average of the spectral flux (EMA). */
+  fluxBaseline: number;
+  /** Frames remaining before another attack can fire (~180 ms per frame). */
+  cooldown: number;
+  /** Startup frames to skip so the baselines settle. */
+  warmup: number;
+};
+
+export function createAttackState(): AttackState {
+  return { prevLevel: 0, fluxBaseline: 0, cooldown: 0, warmup: 2 };
+}
+
+// Onset detection for a fresh strum. A new strum is either:
+//  - a fast level RISE over the previous frame — the ring itself only
+//    decays, so a decaying chord never triggers this; or
+//  - a broadband spectral transient (spectral flux), which still shows up
+//    when the input level is saturated and cannot rise any further.
+// `flux` is the mean positive dB change per FFT bin since the last frame.
+export function detectAttack(level: number, flux: number, state: AttackState): { attack: boolean; state: AttackState } {
+  let { prevLevel, fluxBaseline, cooldown, warmup } = state;
+  fluxBaseline = fluxBaseline * 0.7 + flux * 0.3;
+  let attack = false;
+  if (cooldown > 0) {
+    cooldown--;
+  } else if (warmup > 0) {
+    warmup--;
+  } else {
+    const levelRise = level > 0.05 && level > prevLevel * 1.18;
+    const fluxSpike = flux > Math.max(fluxBaseline * 3, 0.02);
+    attack = levelRise || fluxSpike;
+    if (attack) cooldown = 2;
+  }
+  return { attack, state: { prevLevel: level, fluxBaseline, cooldown, warmup } };
+}
