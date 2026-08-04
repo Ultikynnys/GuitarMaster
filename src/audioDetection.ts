@@ -126,8 +126,8 @@ export function detectChord(spectrum: Float32Array, sampleRate: number, fftSize:
     }
   }
 
-  const confidence = Math.min(1, best.score * 0.75 + Math.max(0, best.score - secondScore) * 2);
-  if (best.score < 0.35 || confidence < 0.3) return null;
+  const confidence = Math.min(1, best.score * 0.85 + Math.max(0, best.score - secondScore) * 1.0);
+  if (best.score < 0.28 || confidence < 0.25) return null;
   return {
     name: `${NOTE_NAMES[best.root]}${best.quality.suffix}`,
     notes: best.quality.intervals.map((interval) => NOTE_NAMES[(best.root + interval) % 12]),

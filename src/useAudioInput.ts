@@ -79,7 +79,7 @@ export function useAudioInput() {
       const source = audioContext.createMediaStreamSource(stream);
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 16384;
-      analyser.smoothingTimeConstant = 0.72;
+      analyser.smoothingTimeConstant = 0.45;
       source.connect(analyser);
       const outputGain = audioContext.createGain();
       outputGain.gain.value = passThrough ? passThroughVolume : 0;
@@ -117,7 +117,7 @@ export function useAudioInput() {
 
         setPitch(detectPitch(timeData, audioContext.sampleRate));
 
-        if (normalizedLevel < 0.06) {
+        if (normalizedLevel < 0.04) {
           setChord(null);
         } else {
           analyser.getFloatFrequencyData(frequencyData);
