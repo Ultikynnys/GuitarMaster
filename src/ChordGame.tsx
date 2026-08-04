@@ -181,7 +181,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const currentStep = progression.steps[currentIndex] ?? progression.steps[0];
   const currentLabel = stepLabel(currentStep);
   const currentChordName = currentStep.type === "chord" ? currentStep.chord : null;
-  const currentIsMute = false;
+  const currentIsMute = currentStep.type === "chord" && currentStep.muted === true;
   const currentNote = currentStep.type === "note" ? currentStep : null;
   const currentIsChord = currentChordName !== null;
   const currentMatches = currentIsChord
@@ -194,7 +194,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const visualIndex = autoplaying && autoplayIndex >= 0 ? autoplayIndex : currentIndex;
   const visualStep = progression.steps[visualIndex] ?? progression.steps[0];
   const visualNextStep = progression.steps[(visualIndex + 1) % progression.steps.length];
-  const visualIsMute = false;
+  const visualIsMute = visualStep.type === "chord" && visualStep.muted === true;
   const visualIsChord = visualStep.type === "chord";
   const visualLabel = stepLabel(visualStep);
   const signalTooLow = listening && inputLevel < minimumSignal;
