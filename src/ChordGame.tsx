@@ -150,12 +150,14 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const [autoplayIndex, setAutoplayIndex] = useState(-1);
   const [showArrows, setShowArrows] = useState(true);
   const [showGhosts, setShowGhosts] = useState(true);
+  const [zenMode, setZenMode] = useState(true);
   const startedAt = useRef(0);
   const feedbackAudioContext = useRef<AudioContext | null>(null);
   const autoplayTimer = useRef<number | null>(null);
   const autoplayGeneration = useRef(0);
   const autoplaySources = useRef(new Set<AudioBufferSourceNode>());
   const needsRelease = useRef(false);
+  const lastAcceptedIndexRef = useRef(-1);
   const prevAttackCount = useRef(attackCount);
   const activeStringSource = useRef(new Map<number, AudioBufferSourceNode>());
   const samplesRef = useRef<SampleMap | null>(null);
@@ -260,22 +262,29 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     source.stop(now + duration);
   }
 
-  function playFeedback(kind: "accept" | "loop", volume: number, delay = 0) {
+  function playFeedback(kind: "accept" | "loop" | "miss", volume: number, delay = 0) {
     const context = feedbackAudioContext.current;
     if (!context || volume === 0) return;
-    const freq = kind === "accept" ? 880 : 523;
-    const duration = kind === "accept" ? 0.08 : 0.15;
     const now = context.currentTime + delay;
     const osc = context.createOscillator();
     const gain = context.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(Math.max(0.0001, volume * 0.4), now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    if (kind === "miss") {
+      // Descending low buzz: unmistakably "wrong", unlike the confirm beeps.
+      osc.type = "square";
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.22);
+      gain.gain.setValueAtTime(Math.max(0.0001, volume * 0.3), now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+    } else {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(kind === "accept" ? 880 : 523, now);
+      gain.gain.setValueAtTime(Math.max(0.0001, volume * 0.4), now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + (kind === "accept" ? 0.08 : 0.15));
+    }
     osc.connect(gain);
     gain.connect(context.destination);
     osc.start(now);
-    osc.stop(now + duration);
+    osc.stop(now + (kind === "miss" ? 0.22 : kind === "accept" ? 0.08 : 0.15));
   }
 
   function stopMetronome() {
@@ -453,17 +462,50 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     }
   }, [currentIsMute, currentMatches, detectedChord?.confidence, detectedChord?.name, detectedPitch?.confidence, detectedPitch?.note, detectedPitch?.octave, listening, mode, requiredFrames, signalTooLow]);
 
+  // Paced mode (zen off): a step is hit the moment the correct chord/note
+  // registers — no 4-frame hold, short steps have no time for that. The grid
+  // scheduler below owns step advancement, so hits never advance the index.
   useEffect(() => {
-    if (mode !== "playing" || !currentIsMute) return;
+    if (mode !== "playing" || zenMode || currentIsMute || signalTooLow) return;
+    if (lastAcceptedIndexRef.current === currentIndex) return;
+    if (!currentMatches) return;
+    lastAcceptedIndexRef.current = currentIndex;
+    needsRelease.current = true;
+    setScore((value) => value + 100 + currentIndex * 25);
+    const context = feedbackAudioContext.current;
+    if (context) previewStep(currentStep, bpm, context.currentTime + 0.01);
+  }, [bpm, currentIndex, currentIsMute, currentMatches, currentStep, mode, signalTooLow, zenMode]);
+
+  // Paced mode (zen off): advance on a strict tempo grid. A step that was
+  // not hit before its deadline is a miss (wrong sound); muted steps pass.
+  useEffect(() => {
+    if (mode !== "playing" || zenMode) return;
+    const timer = window.setTimeout(() => {
+      if (lastAcceptedIndexRef.current !== currentIndex && !currentIsMute) {
+        playFeedback("miss", acceptedStepVolume);
+      }
+      if (currentIndex === progression.steps.length - 1) {
+        setLoops((value) => value + 1);
+        setCurrentIndex(0);
+      } else {
+        setCurrentIndex((value) => value + 1);
+      }
+    }, stepDurationSeconds(stepBeats(currentStep), bpm) * 1000);
+    return () => window.clearTimeout(timer);
+  }, [acceptedStepVolume, bpm, currentIndex, currentIsMute, mode, progression.steps.length, zenMode]);
+
+  useEffect(() => {
+    if (mode !== "playing" || !currentIsMute || !zenMode) return;
     const timer = window.setTimeout(
       () => setHoldFrames(requiredFrames),
       (60_000 / bpm) * stepBeats(currentStep),
     );
     return () => window.clearTimeout(timer);
-  }, [bpm, currentIsMute, currentStep, mode, requiredFrames]);
+  }, [bpm, currentIsMute, currentStep, mode, requiredFrames, zenMode]);
 
   useEffect(() => {
     if (mode !== "playing" || holdFrames < requiredFrames) return;
+    if (!zenMode) return; // paced mode: hits/misses are handled above
     const completedLoop = currentIndex === progression.steps.length - 1;
     if (!currentIsMute) playFeedback("accept", acceptedStepVolume);
     if (completedLoop) playFeedback("loop", acceptedStepVolume, 0.1);
@@ -476,7 +518,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     } else {
       setCurrentIndex((value) => value + 1);
     }
-  }, [acceptedStepVolume, currentIndex, currentIsMute, holdFrames, mode, progression.steps.length, requiredFrames]);
+  }, [acceptedStepVolume, currentIndex, currentIsMute, holdFrames, mode, progression.steps.length, requiredFrames, zenMode]);
 
   function startGame() {
     stopAutoplay();
@@ -489,6 +531,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     setElapsed(0);
     startedAt.current = Date.now();
     needsRelease.current = false;
+    lastAcceptedIndexRef.current = -1;
     setMode("playing");
   }
 
@@ -496,6 +539,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     setMode("ready");
     setCurrentIndex(0);
     setHoldFrames(0);
+    lastAcceptedIndexRef.current = -1;
   }
 
   function selectLevel(id: string) {
@@ -600,6 +644,17 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
               }}
             />
             <div className="autoplay-toggle">
+              <div><strong>Zen mode</strong><span>{zenMode ? "Play at your own pace — steps wait for you" : "Steps auto-advance on the beat; late hits miss"}</span></div>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={zenMode}
+                  onChange={(event) => setZenMode(event.target.checked)}
+                />
+                <i />
+              </label>
+            </div>
+            <div className="autoplay-toggle">
               <div><strong>Repeat autoplay</strong><span>Loops until switched off</span></div>
               <label className="toggle">
                 <input
@@ -670,7 +725,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
             {mode === "playing" ? (
               <>
                 <span>{currentIsMute ? "TIMED MUTE" : signalTooLow ? "READING IGNORED" : heardLabel ? `HEARD ${heardLabel}` : "LISTENING..."}</span>
-                <strong>{currentIsMute ? `Mute for ${formatBeats(stepBeats(currentStep))}` : signalTooLow ? "Signal too low" : currentMatches ? (holdFrames > 0 ? "Hold it" : "Strum again") : `Play ${currentLabel}`}</strong>
+                <strong>{currentIsMute ? `Mute for ${formatBeats(stepBeats(currentStep))}` : signalTooLow ? "Signal too low" : currentMatches ? (holdFrames > 0 ? "Hold it" : !zenMode && lastAcceptedIndexRef.current === currentIndex ? "Wait" : "Strum again") : `Play ${currentLabel}`}</strong>
                 <i><b style={{ width: `${(holdFrames / requiredFrames) * 100}%` }} /></i>
               </>
             ) : (
