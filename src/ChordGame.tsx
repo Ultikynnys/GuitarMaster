@@ -139,7 +139,7 @@ function ChordTab({ chord, nextChord, showArrows, showGhosts, muted }: { chord: 
   );
 }
 
-export default function ChordGame({ detectedChord, detectedPitch, listening, inputLevel }: { detectedChord: ChordResult | null; detectedPitch: PitchResult | null; listening: boolean; inputLevel: number }) {
+export default function ChordGame({ detectedChord, detectedPitch, listening, inputLevel, attackCount }: { detectedChord: ChordResult | null; detectedPitch: PitchResult | null; listening: boolean; inputLevel: number; attackCount: number }) {
   const [levelId, setLevelId] = useState<string>(LEVELS[0].id);
   const [categoryId, setCategoryId] = useState<string>(LEVELS[0].categories[0].id);
   const [progressionId, setProgressionId] = useState<string>(LEVELS[0].categories[0].progressions[0].id);
@@ -164,6 +164,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const autoplayGeneration = useRef(0);
   const autoplaySources = useRef(new Set<AudioBufferSourceNode>());
   const needsRelease = useRef(false);
+  const prevAttackCount = useRef(attackCount);
   const activeStringSource = useRef(new Map<number, AudioBufferSourceNode>());
   const samplesRef = useRef<SampleMap | null>(null);
   const metronomeTimer = useRef<number | null>(null);
@@ -203,6 +204,15 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     const timer = window.setInterval(() => setElapsed(Date.now() - startedAt.current), 100);
     return () => window.clearInterval(timer);
   }, [mode]);
+
+  // Clear the release gate on every detected strum attack so repeated
+  // strums of the same chord are accepted without muting in between.
+  useEffect(() => {
+    if (attackCount !== prevAttackCount.current) {
+      prevAttackCount.current = attackCount;
+      needsRelease.current = false;
+    }
+  }, [attackCount]);
 
   useEffect(() => () => {
     if (autoplayTimer.current !== null) window.clearTimeout(autoplayTimer.current);

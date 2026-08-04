@@ -93,10 +93,10 @@ export function detectChord(spectrum: Float32Array, sampleRate: number, fftSize:
 
   for (let bin = 1; bin < spectrum.length; bin++) {
     const frequency = (bin * sampleRate) / fftSize;
-    if (frequency < 70 || frequency > 1400) continue;
+    if (frequency < 70 || frequency > 2500) continue;
     const db = spectrum[bin];
     if (!Number.isFinite(db) || db < -85) continue;
-    const amplitude = 10 ** (db / 20) / Math.sqrt(frequency / 70);
+    const amplitude = 10 ** (db / 20) / (frequency / 70) ** 0.3;
     const midi = Math.round(69 + 12 * Math.log2(frequency / 440));
     pitchClasses[((midi % 12) + 12) % 12] += amplitude;
     total += amplitude;
@@ -127,7 +127,7 @@ export function detectChord(spectrum: Float32Array, sampleRate: number, fftSize:
   }
 
   const confidence = Math.min(1, best.score * 0.75 + Math.max(0, best.score - secondScore) * 2);
-  if (best.score < 0.48 || confidence < 0.42) return null;
+  if (best.score < 0.35 || confidence < 0.3) return null;
   return {
     name: `${NOTE_NAMES[best.root]}${best.quality.suffix}`,
     notes: best.quality.intervals.map((interval) => NOTE_NAMES[(best.root + interval) % 12]),

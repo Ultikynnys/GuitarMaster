@@ -155,7 +155,7 @@ export default function App() {
 
       <QuickTuner pitch={audio.pitch} listening={audio.status === "listening"} />
 
-      <ChordGame detectedChord={audio.chord} detectedPitch={audio.pitch} listening={audio.status === "listening"} inputLevel={audio.level} />
+      <ChordGame detectedChord={audio.chord} detectedPitch={audio.pitch} listening={audio.status === "listening"} inputLevel={audio.level} attackCount={audio.attackCount} />
 
       <footer>
         <span>v{__APP_VERSION__}</span>
