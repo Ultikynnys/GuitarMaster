@@ -18,6 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Default checkout is a shallow clone (fetch-depth: 1), which makes
+          # `git rev-list --count HEAD` return 1 and the site footer show "v1".
+          fetch-depth: 0
 
       - uses: oven-sh/setup-bun@v2
         with:

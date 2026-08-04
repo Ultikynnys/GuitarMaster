@@ -88,18 +88,57 @@ export function detectPitch(samples: Float32Array, sampleRate: number): PitchRes
 }
 
 export function detectChord(spectrum: Float32Array, sampleRate: number, fftSize: number): ChordResult | null {
+  const firstBin = Math.max(1, Math.ceil((70 * fftSize) / sampleRate));
+  const lastBin = Math.min(spectrum.length - 1, Math.floor((2500 * fftSize) / sampleRate));
+
+  // Convert dB bins to linear amplitude and find the loudest bin in the band.
+  const amplitude = new Float32Array(lastBin + 1);
+  let peak = 0;
+  for (let bin = firstBin; bin <= lastBin; bin++) {
+    const db = spectrum[bin];
+    if (!Number.isFinite(db)) continue;
+    const value = 10 ** (db / 20);
+    amplitude[bin] = value;
+    if (value > peak) peak = value;
+  }
+  // Absolute floor: ~-80 dBFS per bin in a 16k FFT is analyser/ADC hiss,
+  // nothing musical lives below it. Relative floor: partials of a strummed
+  // string stay within ~45 dB of the strongest bin.
+  const floor = Math.max(peak * 10 ** (-45 / 20), 10 ** (-80 / 20));
+  if (peak < floor) return null;
+
+  // Accumulate pitch-class energy from spectral PEAKS only. A plucked
+  // string's partials are local maxima, while room hiss and ADC noise
+  // rarely are — summing every bin (the old behaviour) let ~900 noise
+  // bins dwarf the ~40 partials, so the triad's share of `total` sank
+  // below threshold and real chords were rejected on most frames.
   const pitchClasses = new Array<number>(12).fill(0);
   let total = 0;
-
-  for (let bin = 1; bin < spectrum.length; bin++) {
+  for (let bin = firstBin + 2; bin <= lastBin - 2; bin++) {
+    const value = amplitude[bin];
+    if (value < floor) continue;
+    if (value < amplitude[bin - 2] || value < amplitude[bin - 1]) continue;
+    if (value < amplitude[bin + 1] || value < amplitude[bin + 2]) continue;
+    // Prominence gate: a real partial stands well above the local noise
+    // between partials (bins ±4..±8), a hiss peak does not. This removes
+    // the noise peaks that a plain local-maximum test lets through.
+    const neighbours: number[] = [];
+    for (let d = 4; d <= 8; d++) {
+      if (bin - d >= firstBin) neighbours.push(amplitude[bin - d]);
+      if (bin + d <= lastBin) neighbours.push(amplitude[bin + d]);
+    }
+    if (neighbours.length >= 4) {
+      neighbours.sort((a, b) => a - b);
+      const middle = neighbours.length >> 1;
+      const median = neighbours.length % 2 === 1
+        ? neighbours[middle]
+        : (neighbours[middle - 1] + neighbours[middle]) / 2;
+      if (value < median * 4) continue;
+    }
     const frequency = (bin * sampleRate) / fftSize;
-    if (frequency < 70 || frequency > 2500) continue;
-    const db = spectrum[bin];
-    if (!Number.isFinite(db) || db < -85) continue;
-    const amplitude = 10 ** (db / 20) / (frequency / 70) ** 0.3;
     const midi = Math.round(69 + 12 * Math.log2(frequency / 440));
-    pitchClasses[((midi % 12) + 12) % 12] += amplitude;
-    total += amplitude;
+    pitchClasses[((midi % 12) + 12) % 12] += value;
+    total += value;
   }
 
   if (total < 0.002) return null;
