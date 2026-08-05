@@ -627,7 +627,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
             <input
               id="preview-bpm"
               type="range"
-              min="50"
+              min="20"
               max="180"
               step="1"
               value={bpm}
