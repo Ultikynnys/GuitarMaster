@@ -8,6 +8,8 @@ type ChordShape = {
   name: string;
   frets: [string, string, string, string, string, string];
   fingerNumbers: [string, string, string, string, string, string];
+  /** Barre: one finger across strings `from..to` (tab order, index 0 = high e) at `fret`. */
+  barre?: { fret: number; from: number; to: number };
 };
 
 const songDocuments = import.meta.glob("./songs/*.json", { eager: true, import: "default" });
@@ -21,7 +23,7 @@ const CHORDS: Record<string, ChordShape> = {
   Dm: { name: "D minor", frets: ["1", "3", "2", "0", "x", "x"], fingerNumbers: ["1", "3", "2", "", "", ""] },
   E: { name: "E major", frets: ["0", "0", "1", "2", "2", "0"], fingerNumbers: ["", "", "1", "3", "2", ""] },
   Em: { name: "E minor", frets: ["0", "0", "0", "2", "2", "0"], fingerNumbers: ["", "", "", "3", "2", ""] },
-  F: { name: "F major", frets: ["1", "1", "2", "3", "3", "1"], fingerNumbers: ["1", "1", "2", "4", "3", "1"] },
+  F: { name: "F major", frets: ["1", "1", "2", "3", "3", "1"], fingerNumbers: ["1", "1", "2", "4", "3", "1"], barre: { fret: 1, from: 0, to: 5 } },
   G: { name: "G major", frets: ["3", "0", "0", "0", "2", "3"], fingerNumbers: ["3", "", "", "", "1", "2"] },
 };
 
@@ -67,12 +69,33 @@ function ChordTab({ chord, nextChord, showArrows, showGhosts, muted }: { chord: 
   const diagramFingers = [...chord.fingerNumbers].reverse();
   const nextDiagramFrets = [...nextChord.frets].reverse();
   const nextDiagramFingers = [...nextChord.fingerNumbers].reverse();
+  // A barre is ONE finger across several strings. Map it into diagram space
+  // (low E leftmost) and anchor it at its lowest string so it counts as a
+  // single position for transitions instead of one per string.
+  const barre = chord.barre ? {
+    fret: chord.barre.fret,
+    from: 5 - chord.barre.to,
+    to: 5 - chord.barre.from,
+    finger: chord.fingerNumbers[chord.barre.from],
+  } : null;
+  const nextBarre = nextChord.barre ? {
+    fret: nextChord.barre.fret,
+    from: 5 - nextChord.barre.to,
+    to: 5 - nextChord.barre.from,
+    finger: nextChord.fingerNumbers[nextChord.barre.from],
+  } : null;
+  const onBarre = (barreInfo: typeof barre, fret: number, string: number) =>
+    barreInfo !== null && fret === barreInfo.fret && string >= barreInfo.from && string <= barreInfo.to;
   const fingerTransitions = ["1", "2", "3", "4"].flatMap((finger) => {
-    const positions = (frets: string[], fingers: string[]) => frets.flatMap((fret, string) => (
-      fingers[string] === finger && Number(fret) > 0 ? [{ string, fret: Number(fret) }] : []
-    ));
-    const currentPositions = positions(diagramFrets, diagramFingers);
-    const nextPositions = positions(nextDiagramFrets, nextDiagramFingers);
+    const positions = (frets: string[], fingers: string[], barreInfo: typeof barre) => frets.flatMap((fret, string) => {
+      if (fingers[string] !== finger || Number(fret) <= 0) return [];
+      if (barreInfo !== null && finger === barreInfo.finger && string >= barreInfo.from && string <= barreInfo.to) {
+        return string === barreInfo.from ? [{ string, fret: Number(fret) }] : [];
+      }
+      return [{ string, fret: Number(fret) }];
+    });
+    const currentPositions = positions(diagramFrets, diagramFingers, barre);
+    const nextPositions = positions(nextDiagramFrets, nextDiagramFingers, nextBarre);
     if (currentPositions.length === 0 || nextPositions.length === 0) return [];
     return Array.from({ length: Math.max(currentPositions.length, nextPositions.length) }, (_, index) => ({
       finger,
@@ -100,12 +123,14 @@ function ChordTab({ chord, nextChord, showArrows, showGhosts, muted }: { chord: 
             const nextPosition = nextDiagramFrets[string] === String(fret);
             return (
               <i key={index}>
-                {currentPosition
+                {currentPosition && !onBarre(barre, fret, string)
                   ? <b className={`finger-${finger}`}>{finger}</b>
-                  : showGhosts && nextPosition && !currentPosition && <b className={`next-finger finger-${nextFinger}`}>{nextFinger}</b>}
+                  : showGhosts && nextPosition && !currentPosition && !onBarre(nextBarre, fret, string) && <b className={`next-finger finger-${nextFinger}`}>{nextFinger}</b>}
               </i>
             );
           })}
+          {barre && <b className={`barre finger-${barre.finger}`} style={{ gridColumn: `${barre.from + 1} / ${barre.to + 2}`, gridRow: barre.fret }} />}
+          {showGhosts && nextBarre && nextBarre.fret !== barre?.fret && <b className={`barre next-barre finger-${nextBarre.finger}`} style={{ gridColumn: `${nextBarre.from + 1} / ${nextBarre.to + 2}`, gridRow: nextBarre.fret }} />}
           {showArrows && <svg className="finger-transitions" viewBox={`0 0 600 ${FRET_COUNT * 100}`} preserveAspectRatio="none" aria-hidden="true">
             <defs>
               {["1", "2", "3", "4"].map((finger) => <marker key={finger} id={`finger-arrow-${finger}`} className={`finger-${finger}`} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" /></marker>)}
