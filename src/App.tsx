@@ -111,6 +111,38 @@ export default function App() {
             />
             {audio.passThrough && <p className="feedback-warning">Use headphones to prevent speaker feedback.</p>}
           </div>}
+          <div className="monitor-controls">
+            <div className="monitor-heading">
+              <div>
+                <strong>Level input</strong>
+                <span>Compress quiet and loud playing toward a steady level</span>
+              </div>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={audio.compressorEnabled}
+                  onChange={(event) => audio.setCompressorEnabled(event.target.checked)}
+                  disabled={audio.status !== "listening"}
+                />
+                <i />
+              </label>
+            </div>
+            <label className="volume-control" htmlFor="compressor-amount">
+              <span>Compression</span>
+              <output>{Math.round(audio.compressorAmount * 100)}%</output>
+            </label>
+            <input
+              id="compressor-amount"
+              className="volume-slider"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={audio.compressorAmount}
+              onChange={(event) => audio.setCompressorAmount(Number(event.target.value))}
+              disabled={!audio.compressorEnabled || audio.status !== "listening"}
+            />
+          </div>
           {audio.error && <p className="error" role="alert">{audio.error}</p>}
         </aside>
       </section>

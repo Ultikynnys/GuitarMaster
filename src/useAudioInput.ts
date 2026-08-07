@@ -14,9 +14,13 @@ export function useAudioInput() {
   const [level, setLevel] = useState(0);
   const [passThrough, setPassThroughState] = useState(false);
   const [passThroughVolume, setPassThroughVolumeState] = useState(0.5);
+  const [compressorEnabled, setCompressorEnabledState] = useState(true);
+  const [compressorAmount, setCompressorAmountState] = useState(0.7);
   const [attackCount, setAttackCount] = useState(0);
   const cleanupRef = useRef<() => void>(() => undefined);
   const outputGainRef = useRef<GainNode | null>(null);
+  const compressorRef = useRef<DynamicsCompressorNode | null>(null);
+  const makeupGainRef = useRef<GainNode | null>(null);
   const attackStateRef = useRef(createAttackState());
 
   async function refreshDevices() {
@@ -53,6 +57,29 @@ export function useAudioInput() {
     };
   }, []);
 
+  // Input leveler: a downward compressor tames loud playing while the make-up
+  // gain lifts quiet playing, so both extremes land near a steady middle
+  // level. When disabled, the compressor is set to ratio 1 with an unreachable
+  // threshold (true bypass, no rewiring).
+  function configureCompressor(enabled: boolean, amount: number) {
+    const compressor = compressorRef.current;
+    const makeupGain = makeupGainRef.current;
+    if (!compressor || !makeupGain) return;
+    const time = compressor.context.currentTime;
+    if (!enabled) {
+      compressor.threshold.setTargetAtTime(-140, time, 0.01);
+      compressor.ratio.setTargetAtTime(1, time, 0.01);
+      makeupGain.gain.setTargetAtTime(1, time, 0.05);
+      return;
+    }
+    // Amount 0 keeps ratio 1 and a ceiling threshold (effectively bypass);
+    // amount 1 compresses everything above -40 dBFS at 12:1 with +14 dB gain.
+    compressor.threshold.setTargetAtTime(-8 - amount * 32, time, 0.02);
+    compressor.knee.setTargetAtTime(amount * 30, time, 0.02);
+    compressor.ratio.setTargetAtTime(1 + amount * 11, time, 0.02);
+    makeupGain.gain.setTargetAtTime(1 + amount * 5, time, 0.05);
+  }
+
   async function start(deviceId = selectedDeviceId) {
     cleanupRef.current();
     setStatus("requesting");
@@ -79,12 +106,24 @@ export function useAudioInput() {
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 16384;
       analyser.smoothingTimeConstant = 0.45;
-      source.connect(analyser);
       const outputGain = audioContext.createGain();
       outputGain.gain.value = passThrough ? passThroughVolume : 0;
-      source.connect(outputGain);
+      const compressor = audioContext.createDynamicsCompressor();
+      compressor.attack.value = 0.01;
+      compressor.release.value = 0.25;
+      const makeupGain = audioContext.createGain();
+      // The compressor feeds BOTH the analyser (so quiet strums register for
+      // pitch/chord/level detection) and the monitor output (consistent
+      // listening volume regardless of how hard the guitar is played).
+      source.connect(compressor);
+      compressor.connect(makeupGain);
+      makeupGain.connect(analyser);
+      makeupGain.connect(outputGain);
       outputGain.connect(audioContext.destination);
       outputGainRef.current = outputGain;
+      compressorRef.current = compressor;
+      makeupGainRef.current = makeupGain;
+      configureCompressor(compressorEnabled, compressorAmount);
 
       const timeData = new Float32Array(analyser.fftSize);
       const frequencyData = new Float32Array(analyser.frequencyBinCount);
@@ -133,6 +172,8 @@ export function useAudioInput() {
         cancelAnimationFrame(animationId);
         stream.getTracks().forEach((track) => track.stop());
         outputGainRef.current = null;
+        compressorRef.current = null;
+        makeupGainRef.current = null;
         void audioContext.close();
       };
       await refreshDevices();
@@ -175,10 +216,21 @@ export function useAudioInput() {
     updateOutputGain(passThrough, volume);
   }
 
+  function setCompressorEnabled(enabled: boolean) {
+    setCompressorEnabledState(enabled);
+    configureCompressor(enabled, compressorAmount);
+  }
+
+  function setCompressorAmount(amount: number) {
+    setCompressorAmountState(amount);
+    configureCompressor(compressorEnabled, amount);
+  }
+
   return {
     devices, hasPermission, selectedDeviceId, selectDevice, status, error, pitch, chord, level,
     attackCount,
     passThrough, setPassThrough, passThroughVolume, setPassThroughVolume,
+    compressorEnabled, setCompressorEnabled, compressorAmount, setCompressorAmount,
     scanDevices, start, stop,
   };
 }
