@@ -17,9 +17,9 @@ function rowY(string: number): number {
 
 /**
  * Full tab notation plotted against time. Each string is a horizontal row
- * (high e on top, like written tab); fret numbers sit at the time their
- * step starts. A playhead marks the active step and the container
- * auto-scrolls to keep it in view.
+ * (high e on top, like written tab); fret numbers sit centered on their
+ * string line at the time their step occupies. A playhead marks the active
+ * step and the container auto-scrolls to keep it in view.
  */
 export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
   steps: ProgressionStep[];
@@ -46,7 +46,9 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
   const totalBeats = offsets[offsets.length - 1] + steps[steps.length - 1].beats;
   const width = LEFT_PAD + totalBeats * pxPerBeat + RIGHT_PAD;
   const height = TOP_PAD + STRING_NAMES.length * ROW_HEIGHT + BOTTOM_PAD;
-  const activeX = activeIndex >= 0 ? LEFT_PAD + offsets[activeIndex] * pxPerBeat : 0;
+  const activeX = activeIndex >= 0 && activeIndex < steps.length
+    ? LEFT_PAD + (offsets[activeIndex] + steps[activeIndex].beats / 2) * pxPerBeat
+    : 0;
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -59,7 +61,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
     const x = LEFT_PAD + beat * pxPerBeat;
     const isBar = beat % beatsPerBar === 0;
     grid.push(
-      <line key={`g-${beat}`} className={isBar ? "tl-bar-line" : "tl-beat-line"} x1={x} y1={TOP_PAD} x2={x} y2={TOP_PAD + STRING_NAMES.length * ROW_HEIGHT} />,
+      <line key={`g-${beat}`} className={isBar ? "tl-bar-line" : "tl-beat-line"} x1={x} y1={rowY(0)} x2={x} y2={rowY(STRING_NAMES.length - 1)} />,
     );
     if (isBar && beat < totalBeats) {
       grid.push(<text key={`bar-${beat}`} className="tl-bar-num" x={x + 3} y={TOP_PAD - 8}>{beat / beatsPerBar + 1}</text>);
@@ -72,17 +74,17 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
     const cls = active ? "tl-fret active" : "tl-fret";
     if (step.type === "note") {
       if (step.muted) {
-        return <text key={index} className="tl-mute" x={x} y={rowY(step.string)}>x</text>;
+        return <text key={index} className="tl-mute" x={x} y={rowY(step.string)} dominantBaseline="central">x</text>;
       }
-      return <text key={index} className={cls} x={x} y={rowY(step.string)}>{step.fret}</text>;
+      return <text key={index} className={cls} x={x} y={rowY(step.string)} dominantBaseline="central">{step.fret}</text>;
     }
     const shape = CHORDS[step.chord];
     const frets = shape.frets.flatMap((fret, string) => {
       if (fret === "" || fret === "x") return []; // unplayed string: no mark
       if (step.muted) {
-        return [<text key={`${index}-${string}`} className="tl-mute" x={x} y={rowY(string)}>x</text>];
+        return [<text key={`${index}-${string}`} className="tl-mute" x={x} y={rowY(string)} dominantBaseline="central">x</text>];
       }
-      return [<text key={`${index}-${string}`} className={cls} x={x} y={rowY(string)}>{fret}</text>];
+      return [<text key={`${index}-${string}`} className={cls} x={x} y={rowY(string)} dominantBaseline="central">{fret}</text>];
     });
     return (
       <g key={index}>
@@ -105,11 +107,11 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
         {grid}
         {STRING_NAMES.map((name, string) => (
           <g key={name}>
-            <line className="tl-string" x1={LEFT_PAD} y1={TOP_PAD + string * ROW_HEIGHT} x2={width - RIGHT_PAD} y2={TOP_PAD + string * ROW_HEIGHT} />
-            <text className="tl-string-name" x={LEFT_PAD - 8} y={rowY(string)}>{name}</text>
+            <line className="tl-string" x1={LEFT_PAD} y1={rowY(string)} x2={width - RIGHT_PAD} y2={rowY(string)} />
+            <text className="tl-string-name" x={LEFT_PAD - 8} y={rowY(string)} dominantBaseline="central">{name}</text>
           </g>
         ))}
-        <line className="tl-playhead" x1={activeX} y1={TOP_PAD - 4} x2={activeX} y2={TOP_PAD + STRING_NAMES.length * ROW_HEIGHT + 4} />
+        <line className="tl-playhead" x1={activeX} y1={rowY(0) - 4} x2={activeX} y2={rowY(STRING_NAMES.length - 1) + 4} />
         {marks}
       </svg>
     </div>

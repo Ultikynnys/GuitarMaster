@@ -808,16 +808,18 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
           <button onClick={mode === "playing" ? stopGame : startGame} disabled={!listening || autoplaying}>{mode === "playing" ? "Stop session" : "Start sequence"}</button>
         </div>
 
-        <div className="current-chord">
-          <div className="next-label">{autoplaying ? "AUTOPLAY" : visualIsMute ? "MUTE" : `PLAY THIS ${visualIsChord ? "CHORD" : "NOTE"}`}<span>{visualIndex + 1} / {progression.steps.length}</span></div>
-          <div className={`game-chord-name ${visualLabel.length > 8 ? "extra-long-label" : visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
-        </div>
-        <div className="tab-panel">
-          {tabView === "timeline" ? (
-            <TabTimeline steps={progression.steps} activeIndex={visualIndex} beatsPerBar={progression.beatsPerBar} />
-          ) : (
-            <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} showArrows={showArrows} showGhosts={showGhosts} muted={visualStep.muted} />
-          )}
+        <div className="game-visual">
+          <div className="current-chord">
+            <div className="next-label">{autoplaying ? "AUTOPLAY" : visualIsMute ? "MUTE" : `PLAY THIS ${visualIsChord ? "CHORD" : "NOTE"}`}<span>{visualIndex + 1} / {progression.steps.length}</span></div>
+            <div className={`game-chord-name ${visualLabel.length > 8 ? "extra-long-label" : visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
+          </div>
+          <div className="tab-panel">
+            {tabView === "timeline" ? (
+              <TabTimeline steps={progression.steps} activeIndex={visualIndex} beatsPerBar={progression.beatsPerBar} />
+            ) : (
+              <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} showArrows={showArrows} showGhosts={showGhosts} muted={visualStep.muted} />
+            )}
+          </div>
         </div>
       </div>
     </section>
