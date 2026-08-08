@@ -618,27 +618,6 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
 
       <div className="game-layout">
         <div className="game-controls">
-          <label>Difficulty</label>
-          <div className="difficulty-levels">
-            {LEVELS.map((item, index) => (
-              <button key={item.id} className={item.id === levelId ? "active" : ""} onClick={() => selectLevel(item.id)}>
-                <span>{String(index + 1).padStart(2, "0")}</span>{item.name}
-              </button>
-            ))}
-          </div>
-          <label>Category</label>
-          <div className="category-tabs">
-            {level.categories.map((item) => (
-              <button key={item.id} className={item.id === categoryId ? "active" : ""} onClick={() => selectCategory(item.id)}>
-                {item.name}
-              </button>
-            ))}
-          </div>
-          <label htmlFor="progression">Progression</label>
-          <select id="progression" value={progressionId} onChange={(event) => selectProgression(event.target.value)}>
-            {category.progressions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-          </select>
-
           <div className="autoplay-controls">
             <div className="autoplay-heading">
               <label htmlFor="preview-bpm">Autoplay tempo</label>
@@ -758,12 +737,39 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
               onChange={(checked) => setTabView(checked ? "timeline" : "chord")}
             />
           </div>
-
-          {!listening && <p className="game-warning">Enable the guitar input above to start playing.</p>}
-          <button onClick={mode === "playing" ? stopGame : startGame} disabled={!listening || autoplaying}>{mode === "playing" ? "Stop session" : "Start sequence"}</button>
         </div>
 
         <div className="game-visual">
+          <div className="game-visual-controls">
+            <label>Difficulty</label>
+            <div className="difficulty-levels">
+              {LEVELS.map((item, index) => (
+                <button key={item.id} className={item.id === levelId ? "active" : ""} onClick={() => selectLevel(item.id)}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>{item.name}
+                </button>
+              ))}
+            </div>
+            <label>Category</label>
+            <div className="category-tabs">
+              {level.categories.map((item) => (
+                <button key={item.id} className={item.id === categoryId ? "active" : ""} onClick={() => selectCategory(item.id)}>
+                  {item.name}
+                </button>
+              ))}
+            </div>
+            <div className="progression-row">
+              <div className="progression-select">
+                <label htmlFor="progression">Progression</label>
+                <select id="progression" value={progressionId} onChange={(event) => selectProgression(event.target.value)}>
+                  {category.progressions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                </select>
+              </div>
+              <div className="progression-start">
+                <button className="start-sequence-button" onClick={mode === "playing" ? stopGame : startGame} disabled={!listening || autoplaying}>{mode === "playing" ? "Stop session" : "Start sequence"}</button>
+              </div>
+            </div>
+            {!listening && <p className="game-warning">Enable the guitar input above to start playing.</p>}
+          </div>
           <div className="tab-panel">
             {tabView === "timeline" ? (
               <TabTimeline steps={progression.steps} activeIndex={visualIndex} beatsPerBar={progression.beatsPerBar} saturation={barSaturation} />

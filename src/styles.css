@@ -146,7 +146,6 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .game-stats strong { display: block; margin-top: 4px; color: #e5dfd4; font-size: 16px; }
 .game-layout { display: grid; grid-template-columns: minmax(330px, .95fr) minmax(360px, 1.05fr); border: 1px solid #3b3730; background: #171512; }
 .game-controls { padding: 30px; border-right: 1px solid #3b3730; }
-.game-controls > label { display: block; margin-bottom: 9px; color: #8f897f; font: 9px "DM Mono"; text-transform: uppercase; letter-spacing: .12em; }
 .difficulty-levels { display: grid; grid-template-columns: repeat(5, 1fr); margin-bottom: 24px; border: 1px solid #3d3932; }
 .difficulty-levels button { min-width: 0; padding: 9px 5px; color: #716b62; background: #13110f; border: 0; border-right: 1px solid #3d3932; border-radius: 0; font: 7px/1.25 "DM Mono"; text-transform: uppercase; }
 .difficulty-levels button:last-child { border-right: 0; }
@@ -173,6 +172,12 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .game-range-control input { grid-column: 1 / -1; width: 100%; height: 3px; margin: 0; accent-color: #e8a83e; cursor: pointer; }
 .volume-sliders { padding-top: 12px; border-top: 1px solid #302d27; }
 .volume-sliders .game-range-control { margin: 0; padding: 12px 0; }
+.game-visual { display: flex; flex-direction: column; min-width: 0; }
+.game-visual-controls { padding: 30px 30px 22px; border-bottom: 1px solid #3b3730; }
+.game-visual-controls label { display: block; margin-bottom: 9px; color: #8f897f; font: 9px "DM Mono"; text-transform: uppercase; letter-spacing: .12em; }
+.progression-row { display: grid; grid-template-columns: 3fr 1fr; gap: 14px; align-items: end; }
+.progression-select { min-width: 0; }
+.start-sequence-button { padding: 13px 8px; white-space: nowrap; }
 .game-warning { color: #d38f63; font-size: 10px; }
 .game-visual { display: flex; flex-direction: column; min-width: 0; }
 .tab-panel { flex: 1; min-height: 680px; padding: 30px; display: flex; align-items: center; background: #13110f; }
@@ -216,22 +221,25 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .fret-inlays i { position: absolute; top: var(--fret-position); left: 50%; width: 7px; height: 7px; border-radius: 50%; background: #817a70; box-shadow: 0 0 0 2px #13110f; transform: translate(-50%, -50%); }
 .fret-inlays i.double { width: 36px; border-radius: 0; background: radial-gradient(circle at 4px 50%, #817a70 0 3px, transparent 4px), radial-gradient(circle at 32px 50%, #817a70 0 3px, transparent 4px); box-shadow: none; }
 .fret-labels { position: absolute; inset: 0 -22px 0 auto; width: 18px; display: grid; grid-template-rows: repeat(24, 1fr); align-items: center; color: #d0c8bc; font: 700 9px "DM Mono"; text-align: right; }
-.tab-timeline-wrap { position: relative; z-index: 1; width: 100%; overflow-x: auto; scrollbar-width: thin; scrollbar-color: #4d4840 #171512; }
-.tab-timeline-wrap::-webkit-scrollbar { height: 10px; }
-.tab-timeline-wrap::-webkit-scrollbar-track { background: #171512; }
-.tab-timeline-wrap::-webkit-scrollbar-thumb { background: #4d4840; border: 2px solid #171512; border-radius: 6px; }
-.tab-timeline-wrap::-webkit-scrollbar-thumb:hover { background: #e8a83e; }
-.tab-timeline-wrap::-webkit-scrollbar-corner { background: #171512; }
+.tab-timeline-wrap { position: relative; z-index: 1; width: 100%; display: flex; align-items: stretch; }
+.tab-timeline-scroll { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: thin; scrollbar-color: #4d4840 #171512; }
+.tab-timeline-scroll::-webkit-scrollbar { height: 10px; }
+.tab-timeline-scroll::-webkit-scrollbar-track { background: #171512; }
+.tab-timeline-scroll::-webkit-scrollbar-thumb { background: #4d4840; border: 2px solid #171512; border-radius: 6px; }
+.tab-timeline-scroll::-webkit-scrollbar-thumb:hover { background: #e8a83e; }
+.tab-timeline-scroll::-webkit-scrollbar-corner { background: #171512; }
+.tab-timeline-legend { flex: none; width: 42px; display: flex; flex-direction: column; background: #13110f; border-right: 1px solid #3b3730; }
+.tab-legend-time { display: grid; place-items: center; color: #8f897f; font: 700 13px "DM Mono"; letter-spacing: .08em; }
+.tab-legend-string { display: grid; place-items: center; color: #d0c8bc; font: 700 20px "DM Mono"; }
 .tab-timeline { display: block; margin: 0 auto; background: #13110f; font-family: "DM Mono", monospace; }
 .tab-timeline .tl-string { stroke: #59534a; stroke-width: 2; }
 .tab-timeline .tl-beat-line { stroke: #2a2620; stroke-width: 1; }
 .tab-timeline .tl-bar-line { stroke: #4d4840; stroke-width: 2; }
-.tab-timeline .tl-string-name { fill: #8f897f; font-size: 20px; font-weight: 700; text-anchor: end; }
 .tab-timeline .tl-bar-num { fill: #6f6960; font-size: 17px; }
 .tab-timeline .tl-chord-label { fill: #6db9d1; font-size: 19px; font-weight: 700; text-anchor: start; letter-spacing: .08em; }
 .tab-timeline .tl-fret { fill: #d0c8bc; font-weight: 700; text-anchor: start; }
 .tab-timeline .tl-fret.active { fill: #e8a83e; }
-.tab-timeline .tl-bar { fill: hsl(var(--bar-hue, 200) var(--bar-sat, 60%) 40%); fill-opacity: .6; }
+.tab-timeline .tl-bar { fill: hsl(var(--bar-hue, 200) var(--bar-sat, 100%) 50%); }
 .tab-timeline .tl-bar.active { stroke: #e8a83e; stroke-width: 2; }
 .tab-timeline .tl-mute { fill: #e98171; font-weight: 700; text-anchor: middle; }
 footer { height: 75px; display: flex; align-items: center; justify-content: space-between; color: #625e57; font: 9px "DM Mono"; letter-spacing: .08em; text-transform: uppercase; }

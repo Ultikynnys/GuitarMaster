@@ -5,7 +5,7 @@ import { CHORDS } from "./chords";
 const STRING_NAMES = ["e", "B", "G", "D", "A", "E"]; // index 0 = high e (top row)
 const TOP_PAD = 72;
 const BOTTOM_PAD = 40;
-const LEFT_PAD = 30;
+const LEFT_PAD = 8;
 const RIGHT_PAD = 60;
 const MAX_PX_PER_BEAT = 48;
 const MIN_PX_PER_BEAT = 18;
@@ -19,10 +19,12 @@ function rowY(string: number): number {
   return TOP_PAD + string * ROW_HEIGHT + ROW_HEIGHT / 2;
 }
 
-// Fret color ramp: blue (fret 0) through green to amber (fret 24), in the
-// app's palette language. Each bar is tinted by the fret it is played on.
+// Primary colors (red, yellow, blue) cycled by fret number: adjacent frets
+// always differ and the palette repeats every three frets up the neck.
+const PRIMARY_HUES = [0, 60, 240];
+
 function fretHue(fret: number): number {
-  return Math.round(200 - (Math.min(24, Math.max(0, fret)) / 24) * 160);
+  return PRIMARY_HUES[fret % PRIMARY_HUES.length];
 }
 
 /**
@@ -119,25 +121,32 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
   });
 
   return (
-    <div className="tab-timeline-wrap" ref={wrapRef}>
-      <svg
-        className="tab-timeline"
-        width={width}
-        height={height}
-        fontSize={fontSize}
-        style={{ "--bar-sat": `${Math.round(saturation * 100)}%` } as CSSProperties}
-        role="img"
-        aria-label="Tab notation plotted against time"
-      >
-        {grid}
-        {STRING_NAMES.map((name, string) => (
-          <g key={name}>
-            <line className="tl-string" x1={LEFT_PAD} y1={rowY(string)} x2={width - RIGHT_PAD} y2={rowY(string)} />
-            <text className="tl-string-name" x={LEFT_PAD - 8} y={rowY(string)} dominantBaseline="central">{name}</text>
-          </g>
+    <div className="tab-timeline-wrap">
+      <div className="tab-timeline-legend" style={{ height }} aria-hidden="true">
+        <div className="tab-legend-time" style={{ height: TOP_PAD - ROW_HEIGHT / 2 - 4 }}>{beatsPerBar}/4</div>
+        {STRING_NAMES.map((name) => (
+          <div key={name} className="tab-legend-string" style={{ height: ROW_HEIGHT }}>{name}</div>
         ))}
-        {marks}
-      </svg>
+      </div>
+      <div className="tab-timeline-scroll" ref={wrapRef}>
+        <svg
+          className="tab-timeline"
+          width={width}
+          height={height}
+          fontSize={fontSize}
+          style={{ "--bar-sat": `${Math.round(saturation * 100)}%` } as CSSProperties}
+          role="img"
+          aria-label="Tab notation plotted against time"
+        >
+          {grid}
+          {STRING_NAMES.map((name, string) => (
+            <g key={name}>
+              <line className="tl-string" x1={LEFT_PAD} y1={rowY(string)} x2={width - RIGHT_PAD} y2={rowY(string)} />
+            </g>
+          ))}
+          {marks}
+        </svg>
+      </div>
     </div>
   );
 }
