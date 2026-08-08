@@ -32,10 +32,11 @@ function fretHue(fret: number): number {
  * active step's bars are highlighted and the container auto-scrolls to
  * keep them in view.
  */
-export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
+export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturation }: {
   steps: ProgressionStep[];
   activeIndex: number;
   beatsPerBar: number;
+  saturation: number;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -124,6 +125,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
         width={width}
         height={height}
         fontSize={fontSize}
+        style={{ "--bar-sat": `${Math.round(saturation * 100)}%` } as CSSProperties}
         role="img"
         aria-label="Tab notation plotted against time"
       >

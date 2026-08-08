@@ -170,6 +170,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const [metronomeEnabled, setMetronomeEnabled] = useState(false);
   const [metronomeVolume, setMetronomeVolume] = useState(0.35);
   const [minimumSignal, setMinimumSignal] = useState(0.08);
+  const [barSaturation, setBarSaturation] = useState(0.6);
   const [bpm, setBpm] = useState(LEVELS[0].categories[0].progressions[0].recommendedBpm);
   const [autoplaying, setAutoplaying] = useState(false);
   const [autoplayIndex, setAutoplayIndex] = useState(-1);
@@ -702,6 +703,19 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
                   onChange={(event) => setMinimumSignal(Number(event.target.value))}
                 />
               </div>
+              <div className="game-range-control">
+                <label htmlFor="bar-saturation">Tab bar saturation</label>
+                <output>{Math.round(barSaturation * 100)}%</output>
+                <input
+                  id="bar-saturation"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={barSaturation}
+                  onChange={(event) => setBarSaturation(Number(event.target.value))}
+                />
+              </div>
             </div>
             <SettingToggle
               title="Zen mode"
@@ -752,7 +766,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
         <div className="game-visual">
           <div className="tab-panel">
             {tabView === "timeline" ? (
-              <TabTimeline steps={progression.steps} activeIndex={visualIndex} beatsPerBar={progression.beatsPerBar} />
+              <TabTimeline steps={progression.steps} activeIndex={visualIndex} beatsPerBar={progression.beatsPerBar} saturation={barSaturation} />
             ) : (
               <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} showArrows={showArrows} showGhosts={showGhosts} muted={visualStep.muted} />
             )}

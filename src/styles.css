@@ -231,7 +231,7 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .tab-timeline .tl-chord-label { fill: #6db9d1; font-size: 19px; font-weight: 700; text-anchor: start; letter-spacing: .08em; }
 .tab-timeline .tl-fret { fill: #d0c8bc; font-weight: 700; text-anchor: start; }
 .tab-timeline .tl-fret.active { fill: #e8a83e; }
-.tab-timeline .tl-bar { fill: hsl(var(--bar-hue, 200) 55% 32%); fill-opacity: .45; }
+.tab-timeline .tl-bar { fill: hsl(var(--bar-hue, 200) var(--bar-sat, 60%) 40%); fill-opacity: .6; }
 .tab-timeline .tl-bar.active { stroke: #e8a83e; stroke-width: 2; }
 .tab-timeline .tl-mute { fill: #e98171; font-weight: 700; text-anchor: middle; }
 footer { height: 75px; display: flex; align-items: center; justify-content: space-between; color: #625e57; font: 9px "DM Mono"; letter-spacing: .08em; text-transform: uppercase; }
