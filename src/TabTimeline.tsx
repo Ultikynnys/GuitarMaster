@@ -9,6 +9,9 @@ const LEFT_PAD = 8;
 const RIGHT_PAD = 60;
 const MAX_PX_PER_BEAT = 48;
 const MIN_PX_PER_BEAT = 18;
+/** Minimum bar width and fret-number size so numbers always fit inside. */
+const MIN_BAR_WIDTH = 10;
+const MIN_NUM_FONT = 8;
 const BAR_HEIGHT = 34;
 const ROW_GAP = 12;
 /** Row pitch is driven by the bar height so strings stay close together. */
@@ -85,11 +88,17 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
 
   const marks = steps.map((step, index) => {
     const startX = LEFT_PAD + offsets[index] * pxPerBeat;
-    const width = Math.max(4, step.beats * pxPerBeat);
-    const numX = startX + NUM_OFFSET;
+    const width = Math.max(MIN_BAR_WIDTH, step.beats * pxPerBeat);
     const active = index === activeIndex;
     const barCls = active ? "tl-bar active" : "tl-bar";
     const numCls = active ? "tl-fret active" : "tl-fret";
+    // Fret numbers must stay inside the bar: shrink the glyphs for short
+    // bars and center them when the left offset would push them out.
+    const numFont = Math.min(fontSize, Math.max(MIN_NUM_FONT, width - 4));
+    const numberX = (digits: number) => {
+      const numberWidth = numFont * 0.6 * digits;
+      return numberWidth + NUM_OFFSET <= width ? startX + NUM_OFFSET : startX + Math.max(0, (width - numberWidth) / 2);
+    };
     if (step.type === "note") {
       if (step.muted) {
         return <text key={index} className="tl-mute" x={startX + width / 2} y={rowY(step.string)} dominantBaseline="central">x</text>;
@@ -97,7 +106,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
       return (
         <g key={index}>
           <rect className={barCls} x={startX} y={rowY(step.string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} style={{ "--bar-hue": fretHue(step.fret) } as CSSProperties} />
-          <text className={numCls} x={numX} y={rowY(step.string)} dominantBaseline="central">{step.fret}</text>
+          <text className={numCls} x={numberX(String(step.fret).length)} y={rowY(step.string)} dominantBaseline="central" fontSize={numFont}>{step.fret}</text>
         </g>
       );
     }
@@ -109,12 +118,12 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
       }
       return [
         <rect key={`${index}-${string}-bar`} className={barCls} x={startX} y={rowY(string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} style={{ "--bar-hue": fretHue(Number(fret)) } as CSSProperties} />,
-        <text key={`${index}-${string}`} className={numCls} x={numX} y={rowY(string)} dominantBaseline="central">{fret}</text>,
+        <text key={`${index}-${string}`} className={numCls} x={numberX(fret.length)} y={rowY(string)} dominantBaseline="central" fontSize={numFont}>{fret}</text>,
       ];
     });
     return (
       <g key={index}>
-        {!step.muted && <text className="tl-chord-label" x={numX} y={TOP_PAD - 26}>{step.chord}</text>}
+        {!step.muted && <text className="tl-chord-label" x={startX + NUM_OFFSET} y={TOP_PAD - 26}>{step.chord}</text>}
         {frets}
       </g>
     );
@@ -123,7 +132,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
   return (
     <div className="tab-timeline-wrap">
       <div className="tab-timeline-legend" style={{ height }} aria-hidden="true">
-        <div className="tab-legend-time" style={{ height: TOP_PAD - ROW_HEIGHT / 2 - 4 }}>{beatsPerBar}/4</div>
+        <div className="tab-legend-time" style={{ height: TOP_PAD - ROW_HEIGHT / 2 }}>{beatsPerBar}/4</div>
         {STRING_NAMES.map((name) => (
           <div key={name} className="tab-legend-string" style={{ height: ROW_HEIGHT }}>{name}</div>
         ))}
