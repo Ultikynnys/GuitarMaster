@@ -30,21 +30,20 @@ function fretHue(fret: number): number {
   return PRIMARY_HUES[fret % PRIMARY_HUES.length];
 }
 
-// Global chord label palette: every song shares the same chord -> hue
-// mapping, so a chord always has the same color in any song. Unknown
-// chords fall back to a deterministic hash of their name.
-const CHORD_HUES: Record<string, number> = {
-  Em: 0, C: 60, G: 240,
-  D: 0, A: 60, E: 240,
-  Am: 0, Dm: 60, F: 240,
+// Global chord label palette, keyed by root note so it is future-proof:
+// every chord name starts with a root, so any chord that gets added to the
+// catalog (E7, F#m, Bb, C/G, ...) resolves to a color without a per-chord
+// entry. Both sharp and flat spellings map to the same semitone, and the
+// cycle repeats every three semitones through the primary hues.
+const ROOT_SEMITONES: Record<string, number> = {
+  C: 0, "C#": 1, Db: 1, D: 2, "D#": 3, Eb: 3, E: 4,
+  F: 5, "F#": 6, Gb: 6, G: 7, "G#": 8, Ab: 8, A: 9, "A#": 10, Bb: 10, B: 11,
 };
 
 function chordHue(chord: string): number {
-  const known = CHORD_HUES[chord];
-  if (known !== undefined) return known;
-  let hash = 0;
-  for (const char of chord) hash = (hash * 31 + char.charCodeAt(0)) | 0;
-  return PRIMARY_HUES[Math.abs(hash) % PRIMARY_HUES.length];
+  const root = chord.match(/^[A-G][#b]?/)?.[0] ?? "C";
+  const semitone = ROOT_SEMITONES[root] ?? 0;
+  return PRIMARY_HUES[semitone % PRIMARY_HUES.length];
 }
 
 /**
@@ -96,7 +95,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
     const isBar = beat % beatsPerBar === 0;
     grid.push(
       // Run the lines up through the chord-label row so labels sit on the grid.
-      <line key={`g-${beat}`} className={isBar ? "tl-bar-line" : "tl-beat-line"} x1={x} y1={TOP_PAD - 68} x2={x} y2={rowY(STRING_NAMES.length - 1)} />,
+      <line key={`g-${beat}`} className={isBar ? "tl-bar-line" : "tl-beat-line"} x1={x} y1={TOP_PAD - 68} x2={x} y2={rowY(STRING_NAMES.length - 1) + ROW_HEIGHT / 2} />,
     );
     if (isBar && beat < totalBeats) {
       grid.push(<text key={`bar-${beat}`} className="tl-bar-num" x={x + 3} y={TOP_PAD - 30}>{beat / beatsPerBar + 1}</text>);
@@ -178,11 +177,11 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
           aria-label="Tab notation plotted against time"
         >
           {grid}
-          {STRING_NAMES.map((name, string) => (
-            <g key={name}>
-              {/* String line marks the lane's bottom edge, tab-style: the
-                  fret bar sits above its own string's line. */}
-              <line className="tl-string" x1={LEFT_PAD} y1={rowY(string) + ROW_HEIGHT / 2} x2={width - RIGHT_PAD} y2={rowY(string) + ROW_HEIGHT / 2} />
+          {Array.from({ length: STRING_NAMES.length + 1 }, (_, line) => (
+            <g key={line}>
+              {/* One line per lane boundary (7 for 6 strings), so the high-e
+                  row gets a line above it and the low-E row one below. */}
+              <line className="tl-string" x1={LEFT_PAD} y1={rowY(line) - ROW_HEIGHT / 2} x2={width - RIGHT_PAD} y2={rowY(line) - ROW_HEIGHT / 2} />
             </g>
           ))}
           {marks}
