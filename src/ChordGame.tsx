@@ -185,7 +185,6 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   beatsPerBarRef.current = progression.beatsPerBar;
   metronomeVolumeRef.current = metronomeVolume;
   const currentStep = progression.steps[currentIndex] ?? progression.steps[0];
-  const currentLabel = stepLabel(currentStep);
   const currentChordName = currentStep.type === "chord" ? currentStep.chord : null;
   const currentIsMute = currentStep.type === "chord" && currentStep.muted === true;
   const currentNote = currentStep.type === "note" ? currentStep : null;
@@ -194,9 +193,6 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
     ? detectedChord?.name === currentChordName && detectedChord.confidence >= 0.48
     : currentNote !== null && detectedPitch?.note === currentNote.note && detectedPitch.octave === currentNote.octave && detectedPitch.confidence >= 0.65;
   const requiredFrames = currentIsChord ? REQUIRED_FRAMES : 2;
-  const heardLabel = currentIsChord
-    ? detectedChord?.name
-    : detectedPitch ? `${detectedPitch.note} ${detectedPitch.octave}` : undefined;
   const visualIndex = autoplaying && autoplayIndex >= 0 ? autoplayIndex : currentIndex;
   const visualStep = progression.steps[visualIndex] ?? progression.steps[0];
   const visualNextStep = progression.steps[(visualIndex + 1) % progression.steps.length];
@@ -658,6 +654,47 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
                 setBpm(progression.recommendedBpm);
               }}
             />
+            <div className="volume-sliders">
+              <div className="game-range-control">
+                <label htmlFor="success-volume">Accepted-step tick / tock volume</label>
+                <output>{Math.round(acceptedStepVolume * 100)}%</output>
+                <input
+                  id="success-volume"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={acceptedStepVolume}
+                  onChange={(event) => setAcceptedStepVolume(Number(event.target.value))}
+                />
+              </div>
+              <div className="game-range-control">
+                <label htmlFor="metronome-volume">Metronome volume</label>
+                <output>{Math.round(metronomeVolume * 100)}%</output>
+                <input
+                  id="metronome-volume"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={metronomeVolume}
+                  onChange={(event) => setMetronomeVolume(Number(event.target.value))}
+                />
+              </div>
+              <div className="game-range-control">
+                <label htmlFor="minimum-signal">Minimum chord signal</label>
+                <output>{Math.round(minimumSignal * 100)}%</output>
+                <input
+                  id="minimum-signal"
+                  type="range"
+                  min="0.06"
+                  max="0.3"
+                  step="0.01"
+                  value={minimumSignal}
+                  onChange={(event) => setMinimumSignal(Number(event.target.value))}
+                />
+              </div>
+            </div>
             <div className="autoplay-toggle">
               <div><strong>Zen mode</strong><span>{zenMode ? "Play at your own pace — steps wait for you" : "Steps auto-advance on the beat; late hits miss"}</span></div>
               <label className="toggle">
@@ -730,6 +767,15 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
             </div>
           </div>
 
+          {!listening && <p className="game-warning">Enable the guitar input above to start playing.</p>}
+          <button onClick={mode === "playing" ? stopGame : startGame} disabled={!listening || autoplaying}>{mode === "playing" ? "Stop session" : "Start sequence"}</button>
+        </div>
+
+        <div className="game-visual">
+          <div className="current-chord">
+            <div className="next-label">{autoplaying ? "AUTOPLAY" : visualIsMute ? "MUTE" : `PLAY THIS ${visualIsChord ? "CHORD" : "NOTE"}`}<span>{visualIndex + 1} / {progression.steps.length}</span></div>
+            <div className={`game-chord-name ${visualLabel.length > 8 ? "extra-long-label" : visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
+          </div>
           <div className="sequence-heading">
             <span>Progression sequence</span>
             <span>Page {pageStart / PAGE_SIZE + 1} / {Math.ceil(progression.steps.length / PAGE_SIZE)}</span>
@@ -750,68 +796,6 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
                 </div>
               );
             })}
-          </div>
-
-          <div className={`game-feedback ${!currentIsMute && signalTooLow ? "low-signal" : currentMatches ? "matching" : ""}`}>
-            {mode === "playing" ? (
-              <>
-                <span>{currentIsMute ? "TIMED MUTE" : signalTooLow ? "READING IGNORED" : heardLabel ? `HEARD ${heardLabel}` : "LISTENING..."}</span>
-                <strong>{currentIsMute ? `Mute for ${formatBeats(stepBeats(currentStep))}` : signalTooLow ? "Signal too low" : currentMatches ? (holdFrames > 0 ? "Hold it" : !zenMode && lastAcceptedIndexRef.current === currentIndex ? "Wait" : "Strum again") : `Play ${currentLabel}`}</strong>
-                <i><b style={{ width: `${(holdFrames / requiredFrames) * 100}%` }} /></i>
-              </>
-            ) : (
-              <span>READY</span>
-            )}
-          </div>
-
-          <div className="game-range-control">
-            <label htmlFor="success-volume">Accepted-step tick / tock volume</label>
-            <output>{Math.round(acceptedStepVolume * 100)}%</output>
-            <input
-              id="success-volume"
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={acceptedStepVolume}
-              onChange={(event) => setAcceptedStepVolume(Number(event.target.value))}
-            />
-          </div>
-          <div className="game-range-control">
-            <label htmlFor="metronome-volume">Metronome volume</label>
-            <output>{Math.round(metronomeVolume * 100)}%</output>
-            <input
-              id="metronome-volume"
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={metronomeVolume}
-              onChange={(event) => setMetronomeVolume(Number(event.target.value))}
-            />
-          </div>
-          <div className="game-range-control">
-            <label htmlFor="minimum-signal">Minimum chord signal</label>
-            <output>{Math.round(minimumSignal * 100)}%</output>
-            <input
-              id="minimum-signal"
-              type="range"
-              min="0.06"
-              max="0.3"
-              step="0.01"
-              value={minimumSignal}
-              onChange={(event) => setMinimumSignal(Number(event.target.value))}
-            />
-          </div>
-
-          {!listening && <p className="game-warning">Enable the guitar input above to start playing.</p>}
-          <button onClick={mode === "playing" ? stopGame : startGame} disabled={!listening || autoplaying}>{mode === "playing" ? "Stop session" : "Start sequence"}</button>
-        </div>
-
-        <div className="game-visual">
-          <div className="current-chord">
-            <div className="next-label">{autoplaying ? "AUTOPLAY" : visualIsMute ? "MUTE" : `PLAY THIS ${visualIsChord ? "CHORD" : "NOTE"}`}<span>{visualIndex + 1} / {progression.steps.length}</span></div>
-            <div className={`game-chord-name ${visualLabel.length > 8 ? "extra-long-label" : visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
           </div>
           <div className="tab-panel">
             {tabView === "timeline" ? (

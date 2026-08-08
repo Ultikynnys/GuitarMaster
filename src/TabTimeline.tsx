@@ -3,13 +3,13 @@ import type { ProgressionStep } from "./songCatalog";
 import { CHORDS } from "./chords";
 
 const STRING_NAMES = ["e", "B", "G", "D", "A", "E"]; // index 0 = high e (top row)
-const ROW_HEIGHT = 30;
-const TOP_PAD = 34;
-const BOTTOM_PAD = 16;
+const ROW_HEIGHT = 80;
+const TOP_PAD = 72;
+const BOTTOM_PAD = 40;
 const LEFT_PAD = 30;
 const RIGHT_PAD = 60;
-const MAX_PX_PER_BEAT = 44;
-const MIN_PX_PER_BEAT = 14;
+const MAX_PX_PER_BEAT = 48;
+const MIN_PX_PER_BEAT = 18;
 
 function rowY(string: number): number {
   return TOP_PAD + string * ROW_HEIGHT + ROW_HEIGHT / 2;
@@ -41,8 +41,8 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
   // Scale time so the shortest step still gets a readable slot; cap total
   // width so very long songs stay manageable.
   const minBeats = Math.min(...steps.map((step) => step.beats));
-  const pxPerBeat = Math.max(MIN_PX_PER_BEAT, Math.min(MAX_PX_PER_BEAT, 14 / minBeats));
-  const fontSize = pxPerBeat >= 24 ? 13 : 10;
+  const pxPerBeat = Math.max(MIN_PX_PER_BEAT, Math.min(MAX_PX_PER_BEAT, 18 / minBeats));
+  const fontSize = pxPerBeat >= 30 ? 24 : 18;
   const totalBeats = offsets[offsets.length - 1] + steps[steps.length - 1].beats;
   const width = LEFT_PAD + totalBeats * pxPerBeat + RIGHT_PAD;
   const height = TOP_PAD + STRING_NAMES.length * ROW_HEIGHT + BOTTOM_PAD;
@@ -88,7 +88,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
     });
     return (
       <g key={index}>
-        {!step.muted && <text className="tl-chord-label" x={x} y={TOP_PAD - 14}>{step.chord}</text>}
+        {!step.muted && <text className="tl-chord-label" x={x} y={TOP_PAD - 26}>{step.chord}</text>}
         {frets}
       </g>
     );
