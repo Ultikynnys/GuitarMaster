@@ -161,10 +161,9 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .autoplay-heading output { color: #e8a83e; font-weight: 700; }
 .autoplay-controls > input { width: 100%; height: 3px; margin: 0 0 16px; accent-color: #e8a83e; cursor: pointer; }
 .autoplay-controls > input:disabled { opacity: .45; }
-.autoplay-toggle { display: flex; align-items: center; justify-content: space-between; }
+.autoplay-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
 .autoplay-toggle strong { display: block; color: #d0c8bc; font-size: 10px; }
 .autoplay-toggle span { display: block; margin-top: 3px; color: #706a61; font-size: 8px; }
-.metronome-toggle { margin-top: 14px; padding-top: 14px; border-top: 1px solid #302d27; }
 .sequence-heading { display: flex; justify-content: space-between; align-items: baseline; margin: 20px 30px 9px; color: #6f6960; font: 8px "DM Mono"; letter-spacing: .12em; text-transform: uppercase; }
 .sequence-heading span:last-child { color: #8f897f; }
 .sequence { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 0 30px 18px; }
@@ -188,18 +187,10 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .game-range-control label, .game-range-control output { color: #8f897f; font: 8px "DM Mono"; text-transform: uppercase; }
 .game-range-control output { color: #bdb5a9; }
 .game-range-control input { grid-column: 1 / -1; width: 100%; height: 3px; margin: 0; accent-color: #e8a83e; cursor: pointer; }
-.volume-sliders { margin-top: 4px; padding-top: 16px; border-top: 1px solid #302d27; }
-.volume-sliders .game-range-control { margin: 14px 0 0; }
+.volume-sliders { padding-top: 12px; border-top: 1px solid #302d27; }
+.volume-sliders .game-range-control { margin: 0; padding: 12px 0; }
 .game-warning { color: #d38f63; font-size: 10px; }
 .game-visual { display: flex; flex-direction: column; min-width: 0; }
-.current-chord { position: relative; min-height: 260px; padding: 30px 30px 8px; display: flex; flex-direction: column; overflow: hidden; border-bottom: 1px solid #3b3730; }
-.current-chord::after { content: ""; position: absolute; width: 310px; height: 310px; right: -170px; top: -170px; border: 1px solid #302d27; border-radius: 50%; box-shadow: 0 0 0 35px #171512, 0 0 0 36px #302d27, 0 0 0 70px #171512, 0 0 0 71px #302d27; }
-.next-label { position: relative; z-index: 1; display: flex; justify-content: space-between; color: #e8a83e; font: 9px "DM Mono"; letter-spacing: .26em; }
-.next-label span { color: #6f6960; }
-.game-chord-name { position: relative; z-index: 1; min-width: 0; max-width: 100%; flex: 1; display: grid; place-items: center; color: #eee8dc; font-size: clamp(90px, 9vw, 145px); line-height: .85; letter-spacing: -.04em; font-weight: 600; text-align: center; overflow-wrap: anywhere; }
-.game-chord-name.medium-label { font-size: clamp(58px, 6.5vw, 96px); letter-spacing: -.06em; }
-.game-chord-name.long-label { font-size: clamp(36px, 4.5vw, 68px); line-height: .95; letter-spacing: -.04em; }
-.game-chord-name.extra-long-label { font-size: clamp(20px, 2.8vw, 38px); line-height: .95; letter-spacing: -.04em; }
 .tab-panel { flex: 1; min-height: 680px; padding: 30px; display: flex; align-items: center; background: #13110f; }
 .tab-card { position: relative; z-index: 1; width: 100%; padding: 0; }
 .tab-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
@@ -272,7 +263,6 @@ footer { height: 75px; display: flex; align-items: center; justify-content: spac
   .string-order button:nth-child(-n+3) { border-bottom: 1px solid #3b3730; }
   .game-layout { grid-template-columns: 1fr; }
   .game-controls { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid #3b3730; }
-  .current-chord { min-height: 240px; }
   .tab-panel { min-height: 680px; padding: 25px; }
 }
 
@@ -293,11 +283,6 @@ footer { height: 75px; display: flex; align-items: center; justify-content: spac
   .game-stats span { min-width: 65px; padding: 8px; }
   .game-stats strong { font-size: 12px; }
   .game-layout { grid-template-columns: 1fr; }
-  .current-chord { min-height: 260px; padding: 24px; border-right: 0; border-bottom: 1px solid #3b3730; }
-  .game-chord-name { font-size: 100px; margin: 25px 0 10px; }
-  .game-chord-name.medium-label { font-size: 72px; }
-  .game-chord-name.long-label { font-size: 48px; }
-  .game-chord-name.extra-long-label { font-size: 32px; }
   .tab-panel { min-height: 650px; padding: 28px 24px; }
   .tab-card { max-width: 430px; margin: auto; }
 }

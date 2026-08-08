@@ -142,6 +142,29 @@ function ChordTab({ chord, nextChord, showArrows, showGhosts, muted }: { chord: 
   );
 }
 
+function SettingToggle({ title, description, checked, disabled, onChange }: {
+  title: string;
+  description: string;
+  checked: boolean;
+  disabled?: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <div className="autoplay-toggle">
+      <div><strong>{title}</strong><span>{description}</span></div>
+      <label className="toggle">
+        <input
+          type="checkbox"
+          checked={checked}
+          disabled={disabled}
+          onChange={(event) => onChange(event.target.checked)}
+        />
+        <i />
+      </label>
+    </div>
+  );
+}
+
 export default function ChordGame({ detectedChord, detectedPitch, listening, inputLevel, attackCount }: { detectedChord: ChordResult | null; detectedPitch: PitchResult | null; listening: boolean; inputLevel: number; attackCount: number }) {
   const [levelId, setLevelId] = useState<string>(LEVELS[0].id);
   const [categoryId, setCategoryId] = useState<string>(LEVELS[0].categories[0].id);
@@ -196,9 +219,6 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const visualIndex = autoplaying && autoplayIndex >= 0 ? autoplayIndex : currentIndex;
   const visualStep = progression.steps[visualIndex] ?? progression.steps[0];
   const visualNextStep = progression.steps[(visualIndex + 1) % progression.steps.length];
-  const visualIsMute = visualStep.type === "chord" && visualStep.muted === true;
-  const visualIsChord = visualStep.type === "chord";
-  const visualLabel = stepLabel(visualStep);
   const signalTooLow = listening && inputLevel < minimumSignal;
   // Sequence list shows one 4x4 page at a time; the page follows the
   // active step so it auto-advances while playing or autoplaying.
@@ -695,76 +715,46 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
                 />
               </div>
             </div>
-            <div className="autoplay-toggle">
-              <div><strong>Zen mode</strong><span>{zenMode ? "Play at your own pace — steps wait for you" : "Steps auto-advance on the beat; late hits miss"}</span></div>
-              <label className="toggle">
-                <input
-                  type="checkbox"
-                  checked={zenMode}
-                  onChange={(event) => setZenMode(event.target.checked)}
-                />
-                <i />
-              </label>
-            </div>
-            <div className="autoplay-toggle">
-              <div><strong>Repeat autoplay</strong><span>Loops until switched off</span></div>
-              <label className="toggle">
-                <input
-                  type="checkbox"
-                  checked={autoplaying}
-                  disabled={mode === "playing"}
-                  onChange={(event) => event.target.checked ? void startAutoplay() : stopAutoplay()}
-                />
-                <i />
-              </label>
-            </div>
-            <div className="autoplay-toggle metronome-toggle">
-              <div><strong>Metronome</strong><span>Accents beat 1 in {progression.beatsPerBar}/4</span></div>
-              <label className="toggle">
-                <input
-                  type="checkbox"
-                  checked={metronomeEnabled}
-                  onChange={(event) => {
-                    if (event.target.checked) prepareFeedbackAudio();
-                    setMetronomeEnabled(event.target.checked);
-                  }}
-                />
-                <i />
-              </label>
-            </div>
-            <div className="autoplay-toggle">
-              <div><strong>Finger arrows</strong><span>Show transition arrows between chords</span></div>
-              <label className="toggle">
-                <input
-                  type="checkbox"
-                  checked={showArrows}
-                  onChange={(event) => setShowArrows(event.target.checked)}
-                />
-                <i />
-              </label>
-            </div>
-            <div className="autoplay-toggle">
-              <div><strong>Next-finger ghosts</strong><span>Show semi-transparent upcoming positions</span></div>
-              <label className="toggle">
-                <input
-                  type="checkbox"
-                  checked={showGhosts}
-                  onChange={(event) => setShowGhosts(event.target.checked)}
-                />
-                <i />
-              </label>
-            </div>
-            <div className="autoplay-toggle">
-              <div><strong>Timeline tab</strong><span>Plot the whole progression against time</span></div>
-              <label className="toggle">
-                <input
-                  type="checkbox"
-                  checked={tabView === "timeline"}
-                  onChange={(event) => setTabView(event.target.checked ? "timeline" : "chord")}
-                />
-                <i />
-              </label>
-            </div>
+            <SettingToggle
+              title="Zen mode"
+              description={zenMode ? "Play at your own pace — steps wait for you" : "Steps auto-advance on the beat; late hits miss"}
+              checked={zenMode}
+              onChange={setZenMode}
+            />
+            <SettingToggle
+              title="Repeat autoplay"
+              description="Loops until switched off"
+              checked={autoplaying}
+              disabled={mode === "playing"}
+              onChange={(checked) => (checked ? void startAutoplay() : stopAutoplay())}
+            />
+            <SettingToggle
+              title="Metronome"
+              description={`Accents beat 1 in ${progression.beatsPerBar}/4`}
+              checked={metronomeEnabled}
+              onChange={(checked) => {
+                if (checked) prepareFeedbackAudio();
+                setMetronomeEnabled(checked);
+              }}
+            />
+            <SettingToggle
+              title="Finger arrows"
+              description="Show transition arrows between chords"
+              checked={showArrows}
+              onChange={setShowArrows}
+            />
+            <SettingToggle
+              title="Next-finger ghosts"
+              description="Show semi-transparent upcoming positions"
+              checked={showGhosts}
+              onChange={setShowGhosts}
+            />
+            <SettingToggle
+              title="Timeline tab"
+              description="Plot the whole progression against time"
+              checked={tabView === "timeline"}
+              onChange={(checked) => setTabView(checked ? "timeline" : "chord")}
+            />
           </div>
 
           {!listening && <p className="game-warning">Enable the guitar input above to start playing.</p>}
@@ -772,10 +762,6 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
         </div>
 
         <div className="game-visual">
-          <div className="current-chord">
-            <div className="next-label">{autoplaying ? "AUTOPLAY" : visualIsMute ? "MUTE" : `PLAY THIS ${visualIsChord ? "CHORD" : "NOTE"}`}<span>{visualIndex + 1} / {progression.steps.length}</span></div>
-            <div className={`game-chord-name ${visualLabel.length > 8 ? "extra-long-label" : visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
-          </div>
           <div className="sequence-heading">
             <span>Progression sequence</span>
             <span>Page {pageStart / PAGE_SIZE + 1} / {Math.ceil(progression.steps.length / PAGE_SIZE)}</span>
