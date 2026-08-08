@@ -167,25 +167,6 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .autoplay-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
 .autoplay-toggle strong { display: block; color: #d0c8bc; font-size: 10px; }
 .autoplay-toggle span { display: block; margin-top: 3px; color: #706a61; font-size: 8px; }
-.sequence-heading { display: flex; justify-content: space-between; align-items: baseline; margin: 20px 30px 9px; color: #6f6960; font: 8px "DM Mono"; letter-spacing: .12em; text-transform: uppercase; }
-.sequence-heading span:last-child { color: #8f897f; }
-.sequence { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 0 30px 18px; }
-.sequence > div { position: relative; min-width: 0; min-height: 76px; padding: 13px 10px 10px; border: 1px solid hsl(var(--duration-hue) 25% 25%); color: #625d55; background: hsl(var(--duration-hue) 24% 10%); transition: border-color .2s, background .2s; }
-.sequence > div::before { content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 3px; background: hsl(var(--duration-hue) 70% 58%); }
-.sequence span { display: block; font: 8px "DM Mono"; }
-.sequence strong { display: block; margin-top: 12px; color: #8c867d; font-size: 22px; white-space: nowrap; }
-.sequence strong.label-medium { font-size: 17px; }
-.sequence strong.label-long { font-size: 13px; }
-.sequence strong.label-xl { font-size: 9px; }
-.sequence small { display: block; margin-top: 6px; color: hsl(var(--duration-hue) 55% 68%); font: 700 7px "DM Mono"; white-space: nowrap; }
-.sequence .current { border-color: #e8a83e; background: #241e14; }
-.sequence .current span, .sequence .current strong { color: #e8a83e; }
-.sequence .passed { border-color: #4f6337; background: #192016; }
-.sequence .passed span { color: #a9ce67; }
-.sequence .passed strong { color: #c0cfaa; }
-.sequence .passed small { color: #73815f; }
-.sequence .previewing { border-color: #6db9d1; background: #172329; box-shadow: inset 0 0 0 1px #6db9d1; }
-.sequence .previewing span, .sequence .previewing strong, .sequence .previewing small { color: #8fd2e7; }
 .game-range-control { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px 12px; margin: 0 0 18px; }
 .game-range-control label, .game-range-control output { color: #8f897f; font: 8px "DM Mono"; text-transform: uppercase; }
 .game-range-control output { color: #bdb5a9; }

@@ -10,10 +10,6 @@ const songDocuments = import.meta.glob("./songs/*.json", { eager: true, import: 
 const LEVELS = buildCatalog(songDocuments);
 
 const REQUIRED_FRAMES = 4;
-const SEQUENCE_COLUMNS = 4;
-const SEQUENCE_ROWS = 4;
-/** The sequence list shows at most one 4x4 grid of cards at a time. */
-const PAGE_SIZE = SEQUENCE_COLUMNS * SEQUENCE_ROWS;
 const DIAGRAM_STRING_NAMES = ["E", "A", "D", "G", "B", "e"];
 const TAB_STRING_NAMES = ["e", "B", "G", "D", "A", "E"];
 const OPEN_STRING_FREQUENCIES = [329.63, 246.94, 196, 146.83, 110, 82.41];
@@ -23,11 +19,6 @@ const FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
 
 function stepBeats(step: ProgressionStep): number {
   return step.beats;
-}
-
-function formatBeats(beats: number): string {
-  const rounded = Math.round(beats * 100) / 100;
-  return `${rounded} ${rounded === 1 ? "beat" : "beats"}`;
 }
 
 function durationHue(beats: number): number {
@@ -220,9 +211,6 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const visualStep = progression.steps[visualIndex] ?? progression.steps[0];
   const visualNextStep = progression.steps[(visualIndex + 1) % progression.steps.length];
   const signalTooLow = listening && inputLevel < minimumSignal;
-  // Sequence list shows one 4x4 page at a time; the page follows the
-  // active step so it auto-advances while playing or autoplaying.
-  const pageStart = Math.floor(visualIndex / PAGE_SIZE) * PAGE_SIZE;
 
   useEffect(() => {
     if (mode !== "playing") return;
@@ -762,27 +750,6 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
         </div>
 
         <div className="game-visual">
-          <div className="sequence-heading">
-            <span>Progression sequence</span>
-            <span>Page {pageStart / PAGE_SIZE + 1} / {Math.ceil(progression.steps.length / PAGE_SIZE)}</span>
-          </div>
-          <div className="sequence" aria-label="Progression sequence">
-            {progression.steps.slice(pageStart, pageStart + PAGE_SIZE).map((step, index) => {
-              const stepIndex = pageStart + index;
-              const label = stepLabel(step);
-              return (
-                <div
-                  key={`${label}-${stepIndex}`}
-                  className={`${!autoplaying && stepIndex < currentIndex ? "passed" : !autoplaying && stepIndex === currentIndex ? "current" : ""} ${stepIndex === autoplayIndex ? "previewing" : ""}`}
-                  style={{ "--duration-hue": durationHue(stepBeats(step)) } as CSSProperties}
-                >
-                  <span>{stepIndex < currentIndex ? "OK" : String(stepIndex + 1).padStart(2, "0")}</span>
-                  <strong className={label.length > 5 ? "label-xl" : label.length > 4 ? "label-long" : label.length > 2 ? "label-medium" : ""}>{label}</strong>
-                  <small>{formatBeats(stepBeats(step))}</small>
-                </div>
-              );
-            })}
-          </div>
           <div className="tab-panel">
             {tabView === "timeline" ? (
               <TabTimeline steps={progression.steps} activeIndex={visualIndex} beatsPerBar={progression.beatsPerBar} />
