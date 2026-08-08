@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type CSSProperties } from "react";
 import type { ProgressionStep } from "./songCatalog";
 import { CHORDS } from "./chords";
 
 const STRING_NAMES = ["e", "B", "G", "D", "A", "E"]; // index 0 = high e (top row)
-const ROW_HEIGHT = 80;
 const TOP_PAD = 72;
 const BOTTOM_PAD = 40;
 const LEFT_PAD = 30;
@@ -11,10 +10,19 @@ const RIGHT_PAD = 60;
 const MAX_PX_PER_BEAT = 48;
 const MIN_PX_PER_BEAT = 18;
 const BAR_HEIGHT = 34;
+const ROW_GAP = 12;
+/** Row pitch is driven by the bar height so strings stay close together. */
+const ROW_HEIGHT = BAR_HEIGHT + ROW_GAP;
 const NUM_OFFSET = 8;
 
 function rowY(string: number): number {
   return TOP_PAD + string * ROW_HEIGHT + ROW_HEIGHT / 2;
+}
+
+// Fret color ramp: blue (fret 0) through green to amber (fret 24), in the
+// app's palette language. Each bar is tinted by the fret it is played on.
+function fretHue(fret: number): number {
+  return Math.round(200 - (Math.min(24, Math.max(0, fret)) / 24) * 160);
 }
 
 /**
@@ -64,7 +72,8 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
     const x = LEFT_PAD + beat * pxPerBeat;
     const isBar = beat % beatsPerBar === 0;
     grid.push(
-      <line key={`g-${beat}`} className={isBar ? "tl-bar-line" : "tl-beat-line"} x1={x} y1={rowY(0)} x2={x} y2={rowY(STRING_NAMES.length - 1)} />,
+      // Run the lines up through the chord-label row so labels sit on the grid.
+      <line key={`g-${beat}`} className={isBar ? "tl-bar-line" : "tl-beat-line"} x1={x} y1={TOP_PAD - 50} x2={x} y2={rowY(STRING_NAMES.length - 1)} />,
     );
     if (isBar && beat < totalBeats) {
       grid.push(<text key={`bar-${beat}`} className="tl-bar-num" x={x + 3} y={TOP_PAD - 8}>{beat / beatsPerBar + 1}</text>);
@@ -84,7 +93,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
       }
       return (
         <g key={index}>
-          <rect className={barCls} x={startX} y={rowY(step.string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} />
+          <rect className={barCls} x={startX} y={rowY(step.string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} style={{ "--bar-hue": fretHue(step.fret) } as CSSProperties} />
           <text className={numCls} x={numX} y={rowY(step.string)} dominantBaseline="central">{step.fret}</text>
         </g>
       );
@@ -96,7 +105,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
         return [<text key={`${index}-${string}`} className="tl-mute" x={startX + width / 2} y={rowY(string)} dominantBaseline="central">x</text>];
       }
       return [
-        <rect key={`${index}-${string}-bar`} className={barCls} x={startX} y={rowY(string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} />,
+        <rect key={`${index}-${string}-bar`} className={barCls} x={startX} y={rowY(string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} style={{ "--bar-hue": fretHue(Number(fret)) } as CSSProperties} />,
         <text key={`${index}-${string}`} className={numCls} x={numX} y={rowY(string)} dominantBaseline="central">{fret}</text>,
       ];
     });
