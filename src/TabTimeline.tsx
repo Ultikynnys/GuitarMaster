@@ -92,12 +92,12 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
     const active = index === activeIndex;
     const barCls = active ? "tl-bar active" : "tl-bar";
     const numCls = active ? "tl-fret active" : "tl-fret";
-    // Fret numbers must stay inside the bar: shrink the glyphs for short
-    // bars and center them when the left offset would push them out.
+    // Fret numbers are centered inside their bar; glyphs shrink for short
+    // bars so they always fit.
     const numFont = Math.min(fontSize, Math.max(MIN_NUM_FONT, width - 4));
     const numberX = (digits: number) => {
       const numberWidth = numFont * 0.6 * digits;
-      return numberWidth + NUM_OFFSET <= width ? startX + NUM_OFFSET : startX + Math.max(0, (width - numberWidth) / 2);
+      return startX + Math.max(0, (width - numberWidth) / 2);
     };
     if (step.type === "note") {
       if (step.muted) {
@@ -143,7 +143,9 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
   return (
     <div className="tab-timeline-wrap">
       <div className="tab-timeline-legend" style={{ height }} aria-hidden="true">
-        <div className="tab-legend-time" style={{ height: TOP_PAD - ROW_HEIGHT / 2 }}>{beatsPerBar}/4</div>
+        {/* Time block height = laneTop(0) = TOP_PAD, so the label rows below
+            start exactly where the SVG string lanes start. */}
+        <div className="tab-legend-time" style={{ height: TOP_PAD }}>{beatsPerBar}/4</div>
         {STRING_NAMES.map((name) => (
           <div key={name} className="tab-legend-string" style={{ height: ROW_HEIGHT }}>{name}</div>
         ))}
