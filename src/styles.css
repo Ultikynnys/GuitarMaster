@@ -241,7 +241,9 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .tab-timeline .tl-fret.active { fill: #e8a83e; }
 .tab-timeline .tl-bar { fill: hsl(var(--bar-hue, 200) var(--bar-sat, 100%) 50%); }
 .tab-timeline .tl-bar.active { stroke: #e8a83e; stroke-width: 2; }
-.tab-timeline .tl-mute { fill: #e98171; font-weight: 700; text-anchor: middle; }
+.tab-timeline .tl-bar.open { fill: #ffffff; }
+.tab-timeline .tl-fret.open { fill: #ffffff; }
+.tab-timeline .tl-mute { fill: #ffffff; font-weight: 700; text-anchor: middle; paint-order: stroke; stroke: #0a0908; stroke-width: 3px; }
 footer { height: 75px; display: flex; align-items: center; justify-content: space-between; color: #625e57; font: 9px "DM Mono"; letter-spacing: .08em; text-transform: uppercase; }
 
 @media (max-width: 850px) {

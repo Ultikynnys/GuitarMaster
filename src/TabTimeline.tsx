@@ -12,10 +12,10 @@ const MIN_PX_PER_BEAT = 18;
 /** Minimum bar width and fret-number size so numbers always fit inside. */
 const MIN_BAR_WIDTH = 10;
 const MIN_NUM_FONT = 8;
-const BAR_HEIGHT = 34;
-const ROW_GAP = 12;
-/** Row pitch is driven by the bar height so strings stay close together. */
-const ROW_HEIGHT = BAR_HEIGHT + ROW_GAP;
+const BAR_HEIGHT = 46;
+/** Bars fill their lane edge-to-edge: pitch equals bar height, so the
+ * string lanes pack vertically with no gaps between strings. */
+const ROW_HEIGHT = BAR_HEIGHT;
 const NUM_OFFSET = 8;
 
 function rowY(string: number): number {
@@ -79,10 +79,10 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
     const isBar = beat % beatsPerBar === 0;
     grid.push(
       // Run the lines up through the chord-label row so labels sit on the grid.
-      <line key={`g-${beat}`} className={isBar ? "tl-bar-line" : "tl-beat-line"} x1={x} y1={TOP_PAD - 50} x2={x} y2={rowY(STRING_NAMES.length - 1)} />,
+      <line key={`g-${beat}`} className={isBar ? "tl-bar-line" : "tl-beat-line"} x1={x} y1={TOP_PAD - 68} x2={x} y2={rowY(STRING_NAMES.length - 1)} />,
     );
     if (isBar && beat < totalBeats) {
-      grid.push(<text key={`bar-${beat}`} className="tl-bar-num" x={x + 3} y={TOP_PAD - 8}>{beat / beatsPerBar + 1}</text>);
+      grid.push(<text key={`bar-${beat}`} className="tl-bar-num" x={x + 3} y={TOP_PAD - 30}>{beat / beatsPerBar + 1}</text>);
     }
   }
 
@@ -101,12 +101,19 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
     };
     if (step.type === "note") {
       if (step.muted) {
-        return <text key={index} className="tl-mute" x={startX + width / 2} y={rowY(step.string)} dominantBaseline="central">x</text>;
+        return (
+          <g key={index}>
+            <rect className={barCls} x={startX} y={rowY(step.string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} />
+            <text className="tl-mute" x={startX + width / 2} y={rowY(step.string)} dominantBaseline="central">x</text>
+          </g>
+        );
       }
+      const noteBarCls = step.fret === 0 ? `${barCls} open` : barCls;
+      const noteNumCls = step.fret === 0 ? `${numCls} open` : numCls;
       return (
         <g key={index}>
-          <rect className={barCls} x={startX} y={rowY(step.string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} style={{ "--bar-hue": fretHue(step.fret) } as CSSProperties} />
-          <text className={numCls} x={numberX(String(step.fret).length)} y={rowY(step.string)} dominantBaseline="central" fontSize={numFont}>{step.fret}</text>
+          <rect className={noteBarCls} x={startX} y={rowY(step.string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} style={{ "--bar-hue": fretHue(step.fret) } as CSSProperties} />
+          <text className={noteNumCls} x={numberX(String(step.fret).length)} y={rowY(step.string)} dominantBaseline="central" fontSize={numFont}>{step.fret}</text>
         </g>
       );
     }
@@ -114,16 +121,20 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
     const frets = shape.frets.flatMap((fret, string) => {
       if (fret === "" || fret === "x") return []; // unplayed string: no mark
       if (step.muted) {
-        return [<text key={`${index}-${string}`} className="tl-mute" x={startX + width / 2} y={rowY(string)} dominantBaseline="central">x</text>];
+        return [
+          <rect key={`${index}-${string}-bar`} className={barCls} x={startX} y={rowY(string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} />,
+          <text key={`${index}-${string}`} className="tl-mute" x={startX + width / 2} y={rowY(string)} dominantBaseline="central">x</text>,
+        ];
       }
+      const isOpen = fret === "0";
       return [
-        <rect key={`${index}-${string}-bar`} className={barCls} x={startX} y={rowY(string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} style={{ "--bar-hue": fretHue(Number(fret)) } as CSSProperties} />,
-        <text key={`${index}-${string}`} className={numCls} x={numberX(fret.length)} y={rowY(string)} dominantBaseline="central" fontSize={numFont}>{fret}</text>,
+        <rect key={`${index}-${string}-bar`} className={isOpen ? `${barCls} open` : barCls} x={startX} y={rowY(string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} style={{ "--bar-hue": fretHue(Number(fret)) } as CSSProperties} />,
+        <text key={`${index}-${string}`} className={isOpen ? `${numCls} open` : numCls} x={numberX(fret.length)} y={rowY(string)} dominantBaseline="central" fontSize={numFont}>{fret}</text>,
       ];
     });
     return (
       <g key={index}>
-        {!step.muted && <text className="tl-chord-label" x={startX + NUM_OFFSET} y={TOP_PAD - 26}>{step.chord}</text>}
+        {!step.muted && <text className="tl-chord-label" x={startX + NUM_OFFSET} y={TOP_PAD - 52}>{step.chord}</text>}
         {frets}
       </g>
     );
@@ -150,7 +161,9 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
           {grid}
           {STRING_NAMES.map((name, string) => (
             <g key={name}>
-              <line className="tl-string" x1={LEFT_PAD} y1={rowY(string)} x2={width - RIGHT_PAD} y2={rowY(string)} />
+              {/* String line marks the lane's bottom edge, tab-style: the
+                  fret bar sits above its own string's line. */}
+              <line className="tl-string" x1={LEFT_PAD} y1={rowY(string) + ROW_HEIGHT / 2} x2={width - RIGHT_PAD} y2={rowY(string) + ROW_HEIGHT / 2} />
             </g>
           ))}
           {marks}
