@@ -254,10 +254,11 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .tab-timeline .tl-string-name { fill: #8f897f; font-size: 20px; font-weight: 700; text-anchor: end; }
 .tab-timeline .tl-bar-num { fill: #6f6960; font-size: 17px; }
 .tab-timeline .tl-chord-label { fill: #6db9d1; font-size: 19px; font-weight: 700; text-anchor: middle; letter-spacing: .08em; }
-.tab-timeline .tl-fret { fill: #d0c8bc; font-weight: 700; text-anchor: middle; }
+.tab-timeline .tl-fret { fill: #d0c8bc; font-weight: 700; text-anchor: start; }
 .tab-timeline .tl-fret.active { fill: #e8a83e; }
+.tab-timeline .tl-bar { fill: rgba(208, 200, 188, .1); }
+.tab-timeline .tl-bar.active { fill: rgba(232, 168, 62, .35); stroke: #e8a83e; stroke-width: 2; }
 .tab-timeline .tl-mute { fill: #e98171; font-weight: 700; text-anchor: middle; }
-.tab-timeline .tl-playhead { stroke: #e8a83e; stroke-width: 2; stroke-dasharray: 4 3; }
 footer { height: 75px; display: flex; align-items: center; justify-content: space-between; color: #625e57; font: 9px "DM Mono"; letter-spacing: .08em; text-transform: uppercase; }
 
 @media (max-width: 850px) {

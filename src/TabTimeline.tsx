@@ -10,6 +10,8 @@ const LEFT_PAD = 30;
 const RIGHT_PAD = 60;
 const MAX_PX_PER_BEAT = 48;
 const MIN_PX_PER_BEAT = 18;
+const BAR_HEIGHT = 34;
+const NUM_OFFSET = 8;
 
 function rowY(string: number): number {
   return TOP_PAD + string * ROW_HEIGHT + ROW_HEIGHT / 2;
@@ -17,9 +19,10 @@ function rowY(string: number): number {
 
 /**
  * Full tab notation plotted against time. Each string is a horizontal row
- * (high e on top, like written tab); fret numbers sit centered on their
- * string line at the time their step occupies. A playhead marks the active
- * step and the container auto-scrolls to keep it in view.
+ * (high e on top, like written tab); every step is drawn as a bar spanning
+ * its written length, with the fret number at the bar's left edge. The
+ * active step's bars are highlighted and the container auto-scrolls to
+ * keep them in view.
  */
 export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
   steps: ProgressionStep[];
@@ -47,7 +50,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
   const width = LEFT_PAD + totalBeats * pxPerBeat + RIGHT_PAD;
   const height = TOP_PAD + STRING_NAMES.length * ROW_HEIGHT + BOTTOM_PAD;
   const activeX = activeIndex >= 0 && activeIndex < steps.length
-    ? LEFT_PAD + (offsets[activeIndex] + steps[activeIndex].beats / 2) * pxPerBeat
+    ? LEFT_PAD + offsets[activeIndex] * pxPerBeat
     : 0;
 
   useEffect(() => {
@@ -69,26 +72,37 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
   }
 
   const marks = steps.map((step, index) => {
-    const x = LEFT_PAD + (offsets[index] + step.beats / 2) * pxPerBeat;
+    const startX = LEFT_PAD + offsets[index] * pxPerBeat;
+    const width = Math.max(4, step.beats * pxPerBeat);
+    const numX = startX + NUM_OFFSET;
     const active = index === activeIndex;
-    const cls = active ? "tl-fret active" : "tl-fret";
+    const barCls = active ? "tl-bar active" : "tl-bar";
+    const numCls = active ? "tl-fret active" : "tl-fret";
     if (step.type === "note") {
       if (step.muted) {
-        return <text key={index} className="tl-mute" x={x} y={rowY(step.string)} dominantBaseline="central">x</text>;
+        return <text key={index} className="tl-mute" x={startX + width / 2} y={rowY(step.string)} dominantBaseline="central">x</text>;
       }
-      return <text key={index} className={cls} x={x} y={rowY(step.string)} dominantBaseline="central">{step.fret}</text>;
+      return (
+        <g key={index}>
+          <rect className={barCls} x={startX} y={rowY(step.string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} />
+          <text className={numCls} x={numX} y={rowY(step.string)} dominantBaseline="central">{step.fret}</text>
+        </g>
+      );
     }
     const shape = CHORDS[step.chord];
     const frets = shape.frets.flatMap((fret, string) => {
       if (fret === "" || fret === "x") return []; // unplayed string: no mark
       if (step.muted) {
-        return [<text key={`${index}-${string}`} className="tl-mute" x={x} y={rowY(string)} dominantBaseline="central">x</text>];
+        return [<text key={`${index}-${string}`} className="tl-mute" x={startX + width / 2} y={rowY(string)} dominantBaseline="central">x</text>];
       }
-      return [<text key={`${index}-${string}`} className={cls} x={x} y={rowY(string)} dominantBaseline="central">{fret}</text>];
+      return [
+        <rect key={`${index}-${string}-bar`} className={barCls} x={startX} y={rowY(string) - BAR_HEIGHT / 2} width={width} height={BAR_HEIGHT} rx={3} />,
+        <text key={`${index}-${string}`} className={numCls} x={numX} y={rowY(string)} dominantBaseline="central">{fret}</text>,
+      ];
     });
     return (
       <g key={index}>
-        {!step.muted && <text className="tl-chord-label" x={x} y={TOP_PAD - 26}>{step.chord}</text>}
+        {!step.muted && <text className="tl-chord-label" x={numX} y={TOP_PAD - 26}>{step.chord}</text>}
         {frets}
       </g>
     );
@@ -111,7 +125,6 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar }: {
             <text className="tl-string-name" x={LEFT_PAD - 8} y={rowY(string)} dominantBaseline="central">{name}</text>
           </g>
         ))}
-        <line className="tl-playhead" x1={activeX} y1={rowY(0) - 4} x2={activeX} y2={rowY(STRING_NAMES.length - 1) + 4} />
         {marks}
       </svg>
     </div>
