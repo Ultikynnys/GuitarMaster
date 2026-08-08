@@ -30,6 +30,23 @@ function fretHue(fret: number): number {
   return PRIMARY_HUES[fret % PRIMARY_HUES.length];
 }
 
+// Global chord label palette: every song shares the same chord -> hue
+// mapping, so a chord always has the same color in any song. Unknown
+// chords fall back to a deterministic hash of their name.
+const CHORD_HUES: Record<string, number> = {
+  Em: 0, C: 60, G: 240,
+  D: 0, A: 60, E: 240,
+  Am: 0, Dm: 60, F: 240,
+};
+
+function chordHue(chord: string): number {
+  const known = CHORD_HUES[chord];
+  if (known !== undefined) return known;
+  let hash = 0;
+  for (const char of chord) hash = (hash * 31 + char.charCodeAt(0)) | 0;
+  return PRIMARY_HUES[Math.abs(hash) % PRIMARY_HUES.length];
+}
+
 /**
  * Full tab notation plotted against time. Each string is a horizontal row
  * (high e on top, like written tab); every step is drawn as a bar spanning
@@ -134,7 +151,7 @@ export default function TabTimeline({ steps, activeIndex, beatsPerBar, saturatio
     });
     return (
       <g key={index}>
-        {!step.muted && <text className="tl-chord-label" x={startX + NUM_OFFSET} y={TOP_PAD - 52}>{step.chord}</text>}
+        {!step.muted && <text className="tl-chord-label" x={startX + width / 2} y={TOP_PAD - 52} style={{ "--chord-hue": chordHue(step.chord) } as CSSProperties}>{step.chord}</text>}
         {frets}
       </g>
     );
