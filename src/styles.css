@@ -104,6 +104,9 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .quick-tuner-heading h2 { margin: 8px 0 0; font-size: clamp(36px, 4vw, 58px); line-height: 1; letter-spacing: -.05em; font-weight: 500; }
 .tuner-reset { width: auto; padding: 9px 12px; color: #a9a298; border-color: #4d4840; background: transparent; font: 9px "DM Mono"; text-transform: uppercase; }
 .tuner-reset:hover { color: #e8a83e; background: #1b1916; }
+.tuner-actions { display: flex; align-items: center; gap: 18px; }
+.tuner-auto { display: flex; align-items: center; gap: 9px; }
+.tuner-auto span { color: #8f897f; font: 8px "DM Mono"; letter-spacing: .1em; text-transform: uppercase; }
 .string-order { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid #3b3730; border-bottom: 0; }
 .string-order button { position: relative; min-height: 105px; padding: 15px; color: #79736a; background: #171512; border: 0; border-right: 1px solid #3b3730; border-radius: 0; text-align: left; }
 .string-order button:last-child { border-right: 0; }

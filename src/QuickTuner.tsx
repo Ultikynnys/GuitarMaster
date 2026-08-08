@@ -16,6 +16,7 @@ export default function QuickTuner({ pitch, listening }: { pitch: PitchResult | 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tuned, setTuned] = useState<boolean[]>(STRINGS.map(() => false));
   const [hold, setHold] = useState(0);
+  const [autoAdvance, setAutoAdvance] = useState(true);
   const [currentFrequency, setCurrentFrequency] = useState<number | null>(null);
   const frequencyHistory = useRef<number[]>([]);
   const target = STRINGS[currentIndex];
@@ -47,9 +48,13 @@ export default function QuickTuner({ pitch, listening }: { pitch: PitchResult | 
   useEffect(() => {
     if (hold < REQUIRED_READINGS) return;
     setTuned((values) => values.map((value, index) => index === currentIndex ? true : value));
-    setHold(0);
-    if (currentIndex < STRINGS.length - 1) setCurrentIndex((value) => value + 1);
-  }, [currentIndex, hold]);
+    // Keep the hold bar full when auto-advance is off: resetting it here
+    // would restart the accumulation loop on the same string.
+    if (autoAdvance && currentIndex < STRINGS.length - 1) {
+      setHold(0);
+      setCurrentIndex((value) => value + 1);
+    }
+  }, [autoAdvance, currentIndex, hold]);
 
   function reset() {
     setCurrentIndex(0);
@@ -59,6 +64,14 @@ export default function QuickTuner({ pitch, listening }: { pitch: PitchResult | 
     setCurrentFrequency(null);
   }
 
+  // Selecting a string always makes it the target again — un-tune it so a
+  // previously tuned string can be re-picked even after completion.
+  function selectString(index: number) {
+    setCurrentIndex(index);
+    setHold(0);
+    setTuned((values) => values.map((value, i) => (i === index ? false : value)));
+  }
+
   return (
     <section className="quick-tuner">
       <div className="quick-tuner-heading">
@@ -66,7 +79,20 @@ export default function QuickTuner({ pitch, listening }: { pitch: PitchResult | 
           <p className="eyebrow">QUICK TUNER</p>
           <h2>Low to high</h2>
         </div>
-        <button className="tuner-reset" onClick={reset}>Restart tuning</button>
+        <div className="tuner-actions">
+          <div className="tuner-auto">
+            <span>Auto-advance</span>
+            <label className="toggle">
+              <input
+                type="checkbox"
+                checked={autoAdvance}
+                onChange={(event) => setAutoAdvance(event.target.checked)}
+              />
+              <i />
+            </label>
+          </div>
+          <button className="tuner-reset" onClick={reset}>Restart tuning</button>
+        </div>
       </div>
 
       <div className="string-order">
@@ -74,7 +100,7 @@ export default function QuickTuner({ pitch, listening }: { pitch: PitchResult | 
           <button
             key={string.label}
             className={`${index === currentIndex ? "active" : ""} ${tuned[index] ? "tuned" : ""}`}
-            onClick={() => { setCurrentIndex(index); setHold(0); }}
+            onClick={() => selectString(index)}
           >
             <span>{tuned[index] ? "OK" : String(index + 1).padStart(2, "0")}</span>
             <strong>{string.short}</strong>
