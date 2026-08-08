@@ -165,7 +165,9 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .autoplay-toggle strong { display: block; color: #d0c8bc; font-size: 10px; }
 .autoplay-toggle span { display: block; margin-top: 3px; color: #706a61; font-size: 8px; }
 .metronome-toggle { margin-top: 14px; padding-top: 14px; border-top: 1px solid #302d27; }
-.sequence { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 7px; margin: 26px 0; }
+.sequence-heading { display: flex; justify-content: space-between; align-items: baseline; margin-top: 26px; margin-bottom: 9px; color: #6f6960; font: 8px "DM Mono"; letter-spacing: .12em; text-transform: uppercase; }
+.sequence-heading span:last-child { color: #8f897f; }
+.sequence { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 0 0 26px; }
 .sequence > div { position: relative; min-width: 0; min-height: 76px; padding: 13px 10px 10px; border: 1px solid hsl(var(--duration-hue) 25% 25%); color: #625d55; background: hsl(var(--duration-hue) 24% 10%); transition: border-color .2s, background .2s; }
 .sequence > div::before { content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 3px; background: hsl(var(--duration-hue) 70% 58%); }
 .sequence span { display: block; font: 8px "DM Mono"; }
@@ -245,6 +247,18 @@ button.secondary { color: #d8d2c7; background: transparent; border-color: #5a544
 .fret-inlays i { position: absolute; top: var(--fret-position); left: 50%; width: 7px; height: 7px; border-radius: 50%; background: #817a70; box-shadow: 0 0 0 2px #13110f; transform: translate(-50%, -50%); }
 .fret-inlays i.double { width: 36px; border-radius: 0; background: radial-gradient(circle at 4px 50%, #817a70 0 3px, transparent 4px), radial-gradient(circle at 32px 50%, #817a70 0 3px, transparent 4px); box-shadow: none; }
 .fret-labels { position: absolute; inset: 0 -22px 0 auto; width: 18px; display: grid; grid-template-rows: repeat(24, 1fr); align-items: center; color: #d0c8bc; font: 700 9px "DM Mono"; text-align: right; }
+.tab-timeline-wrap { position: relative; z-index: 1; width: 100%; overflow-x: auto; }
+.tab-timeline { display: block; background: #13110f; font-family: "DM Mono", monospace; }
+.tab-timeline .tl-string { stroke: #59534a; stroke-width: 2; }
+.tab-timeline .tl-beat-line { stroke: #2a2620; stroke-width: 1; }
+.tab-timeline .tl-bar-line { stroke: #4d4840; stroke-width: 2; }
+.tab-timeline .tl-string-name { fill: #8f897f; font-size: 12px; font-weight: 700; text-anchor: end; }
+.tab-timeline .tl-bar-num { fill: #6f6960; font-size: 10px; }
+.tab-timeline .tl-chord-label { fill: #6db9d1; font-size: 11px; font-weight: 700; text-anchor: middle; letter-spacing: .08em; }
+.tab-timeline .tl-fret { fill: #d0c8bc; font-weight: 700; text-anchor: middle; }
+.tab-timeline .tl-fret.active { fill: #e8a83e; }
+.tab-timeline .tl-mute { fill: #e98171; font-weight: 700; text-anchor: middle; }
+.tab-timeline .tl-playhead { stroke: #e8a83e; stroke-width: 2; stroke-dasharray: 4 3; }
 footer { height: 75px; display: flex; align-items: center; justify-content: space-between; color: #625e57; font: 9px "DM Mono"; letter-spacing: .08em; text-transform: uppercase; }
 
 @media (max-width: 850px) {

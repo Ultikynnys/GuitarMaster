@@ -3,31 +3,17 @@ import type { ChordResult, PitchResult } from "./audioDetection";
 import { chordPluckTiming, stepDurationSeconds } from "./playbackTiming";
 import { loadSamples, playSample, type SampleMap } from "./sampleEngine";
 import { buildCatalog, stepLabel, type ProgressionStep } from "./songCatalog";
-
-type ChordShape = {
-  name: string;
-  frets: [string, string, string, string, string, string];
-  fingerNumbers: [string, string, string, string, string, string];
-  /** Barre: one finger across strings `from..to` (tab order, index 0 = high e) at `fret`. */
-  barre?: { fret: number; from: number; to: number };
-};
+import TabTimeline from "./TabTimeline";
+import { CHORDS, type ChordShape } from "./chords";
 
 const songDocuments = import.meta.glob("./songs/*.json", { eager: true, import: "default" });
 const LEVELS = buildCatalog(songDocuments);
 
-const CHORDS: Record<string, ChordShape> = {
-  A: { name: "A major", frets: ["0", "2", "2", "2", "0", "x"], fingerNumbers: ["", "3", "2", "1", "", ""] },
-  Am: { name: "A minor", frets: ["0", "1", "2", "2", "0", "x"], fingerNumbers: ["", "1", "3", "2", "", ""] },
-  C: { name: "C major", frets: ["0", "1", "0", "2", "3", "x"], fingerNumbers: ["", "1", "", "2", "3", ""] },
-  D: { name: "D major", frets: ["2", "3", "2", "0", "x", "x"], fingerNumbers: ["2", "3", "1", "", "", ""] },
-  Dm: { name: "D minor", frets: ["1", "3", "2", "0", "x", "x"], fingerNumbers: ["1", "3", "2", "", "", ""] },
-  E: { name: "E major", frets: ["0", "0", "1", "2", "2", "0"], fingerNumbers: ["", "", "1", "3", "2", ""] },
-  Em: { name: "E minor", frets: ["0", "0", "0", "2", "2", "0"], fingerNumbers: ["", "", "", "3", "2", ""] },
-  F: { name: "F major", frets: ["1", "1", "2", "3", "3", "1"], fingerNumbers: ["1", "1", "2", "4", "3", "1"], barre: { fret: 1, from: 0, to: 5 } },
-  G: { name: "G major", frets: ["3", "0", "0", "0", "2", "3"], fingerNumbers: ["3", "", "", "", "1", "2"] },
-};
-
 const REQUIRED_FRAMES = 4;
+const SEQUENCE_COLUMNS = 4;
+const SEQUENCE_ROWS = 4;
+/** The sequence list shows at most one 4x4 grid of cards at a time. */
+const PAGE_SIZE = SEQUENCE_COLUMNS * SEQUENCE_ROWS;
 const DIAGRAM_STRING_NAMES = ["E", "A", "D", "G", "B", "e"];
 const TAB_STRING_NAMES = ["e", "B", "G", "D", "A", "E"];
 const OPEN_STRING_FREQUENCIES = [329.63, 246.94, 196, 146.83, 110, 82.41];
@@ -176,6 +162,7 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const [showArrows, setShowArrows] = useState(true);
   const [showGhosts, setShowGhosts] = useState(true);
   const [zenMode, setZenMode] = useState(true);
+  const [tabView, setTabView] = useState<"chord" | "timeline">("chord");
   const startedAt = useRef(0);
   const feedbackAudioContext = useRef<AudioContext | null>(null);
   const autoplayTimer = useRef<number | null>(null);
@@ -217,6 +204,9 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
   const visualIsChord = visualStep.type === "chord";
   const visualLabel = stepLabel(visualStep);
   const signalTooLow = listening && inputLevel < minimumSignal;
+  // Sequence list shows one 4x4 page at a time; the page follows the
+  // active step so it auto-advances while playing or autoplaying.
+  const pageStart = Math.floor(visualIndex / PAGE_SIZE) * PAGE_SIZE;
 
   useEffect(() => {
     if (mode !== "playing") return;
@@ -727,18 +717,34 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
                 <i />
               </label>
             </div>
+            <div className="autoplay-toggle">
+              <div><strong>Timeline tab</strong><span>Plot the whole progression against time</span></div>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={tabView === "timeline"}
+                  onChange={(event) => setTabView(event.target.checked ? "timeline" : "chord")}
+                />
+                <i />
+              </label>
+            </div>
           </div>
 
+          <div className="sequence-heading">
+            <span>Progression sequence</span>
+            <span>Page {pageStart / PAGE_SIZE + 1} / {Math.ceil(progression.steps.length / PAGE_SIZE)}</span>
+          </div>
           <div className="sequence" aria-label="Progression sequence">
-            {progression.steps.map((step, index) => {
+            {progression.steps.slice(pageStart, pageStart + PAGE_SIZE).map((step, index) => {
+              const stepIndex = pageStart + index;
               const label = stepLabel(step);
               return (
                 <div
-                  key={`${label}-${index}`}
-                  className={`${!autoplaying && index < currentIndex ? "passed" : !autoplaying && index === currentIndex ? "current" : ""} ${index === autoplayIndex ? "previewing" : ""}`}
+                  key={`${label}-${stepIndex}`}
+                  className={`${!autoplaying && stepIndex < currentIndex ? "passed" : !autoplaying && stepIndex === currentIndex ? "current" : ""} ${stepIndex === autoplayIndex ? "previewing" : ""}`}
                   style={{ "--duration-hue": durationHue(stepBeats(step)) } as CSSProperties}
                 >
-                  <span>{index < currentIndex ? "OK" : String(index + 1).padStart(2, "0")}</span>
+                  <span>{stepIndex < currentIndex ? "OK" : String(stepIndex + 1).padStart(2, "0")}</span>
                   <strong className={label.length > 5 ? "label-xl" : label.length > 4 ? "label-long" : label.length > 2 ? "label-medium" : ""}>{label}</strong>
                   <small>{formatBeats(stepBeats(step))}</small>
                 </div>
@@ -807,7 +813,11 @@ export default function ChordGame({ detectedChord, detectedPitch, listening, inp
           <div className={`game-chord-name ${visualLabel.length > 8 ? "extra-long-label" : visualLabel.length > 5 ? "long-label" : visualLabel.length > 2 ? "medium-label" : ""}`}>{visualLabel}</div>
         </div>
         <div className="tab-panel">
-          <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} showArrows={showArrows} showGhosts={showGhosts} muted={visualStep.muted} />
+          {tabView === "timeline" ? (
+            <TabTimeline steps={progression.steps} activeIndex={visualIndex} beatsPerBar={progression.beatsPerBar} />
+          ) : (
+            <ChordTab chord={shapeForStep(visualStep)} nextChord={shapeForStep(visualNextStep)} showArrows={showArrows} showGhosts={showGhosts} muted={visualStep.muted} />
+          )}
         </div>
       </div>
     </section>
